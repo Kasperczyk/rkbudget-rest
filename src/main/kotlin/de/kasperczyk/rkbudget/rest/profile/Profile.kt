@@ -1,5 +1,7 @@
 package de.kasperczyk.rkbudget.rest.profile
 
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
@@ -10,5 +12,8 @@ data class Profile(
         var firstName: String = "",
         var lastName: String = "",
         var emailAddress: EmailAddress = EmailAddress(fullAddress = ""),
-        var password: String = ""
-)
+        var password: String = "") {
+
+    val creationDate: LocalDate = LocalDate.now()
+    var lastLoginTimestamp: LocalDateTime? = null
+}
