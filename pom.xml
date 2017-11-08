@@ -24,6 +24,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
 		<kotlin.version>1.1.51</kotlin.version>
+		<javamoney.version>1.1</javamoney.version>
 	</properties>
 
 	<dependencies>
@@ -67,11 +68,16 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!--<dependency>-->
-			<!--<groupId>org.springframework.security</groupId>-->
-			<!--<artifactId>spring-security-test</artifactId>-->
-			<!--<scope>test</scope>-->
-		<!--</dependency>-->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.javamoney</groupId>
+			<artifactId>moneta</artifactId>
+			<version>${javamoney.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
