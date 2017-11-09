@@ -16,7 +16,9 @@ class ProfileRestController(val profileService: ProfileService) {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     fun handleProfileNotFoundException(profileNotFoundException: ProfileNotFoundException): ServerError =
             with(profileNotFoundException.profileEmailAddress) {
-                ServerError(errorMessage = "Profile with email address '$fullAddress' not found")
+                ServerError(
+                        errorMessage = "Profile with email address '$fullAddress' not found",
+                        parameters = mapOf(pair = "profileEmailAddress" to fullAddress)
+                )
             }
-
 }
