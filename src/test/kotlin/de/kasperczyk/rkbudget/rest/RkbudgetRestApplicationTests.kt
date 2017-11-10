@@ -12,5 +12,4 @@ class RkbudgetRestApplicationTests {
 	@Test
 	fun contextLoads() {
 	}
-
 }

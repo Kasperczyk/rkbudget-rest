@@ -1,4 +1,4 @@
-package de.kasperczyk.rkbudget.rest.profile
+package de.kasperczyk.rkbudget.rest.profile.entity
 
 import javax.persistence.Embeddable
 

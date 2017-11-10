@@ -1,5 +1,6 @@
-package de.kasperczyk.rkbudget.rest.account
+package de.kasperczyk.rkbudget.rest.account.entity
 
+import de.kasperczyk.rkbudget.rest.account.EURO
 import org.javamoney.moneta.Money
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue

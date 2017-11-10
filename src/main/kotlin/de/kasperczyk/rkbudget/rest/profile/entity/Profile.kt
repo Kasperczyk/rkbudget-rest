@@ -1,4 +1,4 @@
-package de.kasperczyk.rkbudget.rest.profile
+package de.kasperczyk.rkbudget.rest.profile.entity
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -11,7 +11,7 @@ data class Profile(
         @Id @GeneratedValue val id: Long = 0,
         var firstName: String = "",
         var lastName: String = "",
-        var emailAddress: EmailAddress = EmailAddress(fullAddress = ""),
+        var emailAddress: EmailAddress = EmailAddress(),
         var password: String = "") {
 
     val creationDate: LocalDate = LocalDate.now()

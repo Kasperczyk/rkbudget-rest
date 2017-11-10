@@ -1,5 +1,7 @@
 package de.kasperczyk.rkbudget.rest.profile
 
+import de.kasperczyk.rkbudget.rest.profile.entity.EmailAddress
+import de.kasperczyk.rkbudget.rest.profile.entity.Profile
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
