@@ -1,15 +1,35 @@
 package de.kasperczyk.rkbudget.rest.account.entity
 
-import de.kasperczyk.rkbudget.rest.account.EURO
-import org.javamoney.moneta.Money
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import de.kasperczyk.rkbudget.rest.profile.entity.Profile
+import java.time.LocalDate
+import javax.persistence.*
 
 @Entity
 data class Account(
-        @Id @GeneratedValue val id: Long = 0,
+
+        @Id
+        @GeneratedValue
+        val id: Long = 0,
+
+        @Column
         var name: String = "",
-        val accountType: AccountType = AccountType.CASH,
-        var amount: Money = Money.of(0, EURO)
+
+        @Column
+        val accountType: AccountType = AccountType.CUSTOM,
+
+        @Column
+        var institute: String? = null,
+
+        @Column(unique = true)
+        var iban: String? = null,
+
+        @Column(unique = true)
+        var creditCardNumber: String? = null,
+
+        @Column
+        var expirationDate: LocalDate? = null,
+
+        @ManyToOne
+        @JoinColumn(name = "profile_id")
+        var profile: Profile = Profile()
 )

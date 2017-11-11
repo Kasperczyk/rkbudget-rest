@@ -18,7 +18,11 @@ class ProfileService(val profileRepository: ProfileRepository) {
 
     fun getProfileByEmailAddress(profileEmailAddress: EmailAddress): Profile =
             profileRepository.findByEmailAddress(profileEmailAddress) ?:
-                    throw ProfileNotFoundException(profileEmailAddress)
+                    throw ProfileNotFoundException(profileEmailAddress = profileEmailAddress)
+
+    fun getProfileById(profileId: Long): Profile =
+            profileRepository.findById(profileId) ?:
+                    throw ProfileNotFoundException(profileId = profileId)
 
     fun updateProfile(profileId: Long, updatedProfile: Profile) {
         val profile = profileRepository.findOne(profileId) ?:
