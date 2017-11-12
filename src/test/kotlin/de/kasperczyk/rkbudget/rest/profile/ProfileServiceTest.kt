@@ -94,13 +94,14 @@ class ProfileServiceTest {
     @Test
     fun `updating an existing profile updates that profile in the database`() {
         val updatedProfile = Profile(
+                id = 1,
                 firstName = "Christina",
                 lastName = "Kasperczyk",
                 emailAddress = EmailAddress(fullAddress = "christina.kasperczyk@web.de"),
                 password = "geheim"
         )
-        assertThat(updatedProfile, `is`(not(testProfile)))
-        `when`(profileRepositoryMock.findOne(updatedProfile.id)).thenReturn(testProfile.copy())
+        assertThat(updatedProfile, `is`(not(testProfile.copy(id = 1))))
+        `when`(profileRepositoryMock.findOne(updatedProfile.id)).thenReturn(testProfile.copy(id = 1))
         profileService.updateProfile(updatedProfile.id, updatedProfile)
         verify(profileRepositoryMock).findOne(updatedProfile.id)
         verify(profileRepositoryMock).save(updatedProfile)
@@ -131,5 +132,19 @@ class ProfileServiceTest {
         expectedException.expectMessage("Profile with id '${testProfile.id}' not found")
         profileService.deleteProfile(testProfile.id)
         verify(profileRepositoryMock, never()).delete(testProfile.id)
+    }
+
+    @Test
+    fun `exists returns true if the profile exists`() {
+        `when`(profileRepositoryMock.exists(testProfile.id)).thenReturn(true)
+        val exists = profileService.exists(testProfile.id)
+        assertThat(exists, `is`(true))
+    }
+
+    @Test
+    fun `exists returns false if the profile does not exist`() {
+        `when`(profileRepositoryMock.exists(testProfile.id)).thenReturn(false)
+        val exists = profileService.exists(testProfile.id)
+        assertThat(exists, `is`(false))
     }
 }

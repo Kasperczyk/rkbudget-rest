@@ -41,4 +41,6 @@ class ProfileService(val profileRepository: ProfileRepository) {
                 throw ProfileNotFoundException(profileId = profileId)
         profileRepository.delete(profileId)
     }
+
+    fun exists(profileId: Long) = profileRepository.exists(profileId)
 }
