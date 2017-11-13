@@ -13,7 +13,7 @@ import java.time.LocalDate
 
 @RunWith(SpringRunner::class)
 @SpringBootTest
-class RkbudgetRestApplicationTests {
+class RKBudgetRestApplicationTests {
 
     @Autowired
     private lateinit var applicationContext: ApplicationContext

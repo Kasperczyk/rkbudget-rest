@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.Bean
 
 @SpringBootApplication
-class RkbudgetRestApplication {
+class RKBudgetRestApplication {
 
     @Bean
     @Qualifier("objectMapper")
@@ -20,5 +20,5 @@ class RkbudgetRestApplication {
 }
 
 fun main(args: Array<String>) {
-    SpringApplication.run(RkbudgetRestApplication::class.java, *args)
+    SpringApplication.run(RKBudgetRestApplication::class.java, *args)
 }

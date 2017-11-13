@@ -1,7 +1,7 @@
 package de.kasperczyk.rkbudget.rest.profile
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import de.kasperczyk.rkbudget.rest.RkbudgetRestApplication
+import de.kasperczyk.rkbudget.rest.RKBudgetRestApplication
 import de.kasperczyk.rkbudget.rest.ServerError
 import de.kasperczyk.rkbudget.rest.profile.entity.Profile
 import de.kasperczyk.rkbudget.rest.profile.exception.DuplicateEmailAddressException
@@ -28,8 +28,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @RunWith(SpringRunner::class)
 @WebMvcTest(ProfileRestController::class, secure = false)
-@ContextConfiguration(classes = arrayOf(RkbudgetRestApplication::class))
-class ProfileRestControllerTest() {
+@ContextConfiguration(classes = arrayOf(RKBudgetRestApplication::class))
+class ProfileRestControllerTest {
+
+    private val REQUEST_URL = "/profiles"
 
     @Autowired
     private lateinit var mockMvc: MockMvc
@@ -52,7 +54,7 @@ class ProfileRestControllerTest() {
         `when`(profileService.createProfile(testProfile)).thenReturn(testProfile)
         val jsonProfile = objectMapper.writeValueAsString(testProfile)
         val jsonResult = mockMvc
-                .perform(post("/profiles")
+                .perform(post(REQUEST_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonProfile))
                 .andExpect(status().isCreated)
@@ -66,22 +68,35 @@ class ProfileRestControllerTest() {
     fun `POST with an existing email address returns status code 409 (conflict) and a ServerError object`() {
         `when`(profileService.createProfile(testProfile)).thenThrow(DuplicateEmailAddressException(testEmailAddress))
         val jsonResult = mockMvc
-                .perform(post("/profiles")
+                .perform(post(REQUEST_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonProfile))
                 .andExpect(status().isConflict)
                 .andReturn().response.contentAsString
         val result = objectMapper.readValue(jsonResult, ServerError::class.java)
         assertThat(result.errorMessage, `is`(not(isEmptyString())))
-        assertThat(result.parameters, `is`(nullValue()))
+        assertThat(result.pathParameters, `is`(nullValue()))
         verify(profileService).createProfile(testProfile)
+    }
+
+    @Test
+    fun `POST without a valid body returns status code 400 (bad request) and a ServerError object`() {
+        val jsonResult = mockMvc
+                .perform(post(REQUEST_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(""))
+                .andExpect(status().isBadRequest)
+                .andReturn().response.contentAsString
+        val result = objectMapper.readValue(jsonResult, ServerError::class.java)
+        assertThat(result.errorMessage, `is`("Required request body of type ${Profile::class} is missing"))
+        assertThat(result.pathParameters, `is`(nullValue()))
     }
 
     @Test
     fun `GET for an available profile returns status code 200 (ok) and the profile`() {
         `when`(profileService.getProfileByEmailAddress(testEmailAddress)).thenReturn(testProfile)
         val jsonResult = mockMvc
-                .perform(get("/profiles/${testEmailAddress.fullAddress}"))
+                .perform(get("$REQUEST_URL/${testEmailAddress.fullAddress}"))
                 .andExpect(status().isOk)
                 .andReturn().response.contentAsString
         val result = objectMapper.readValue(jsonResult, Profile::class.java)
@@ -94,18 +109,18 @@ class ProfileRestControllerTest() {
         `when`(profileService.getProfileByEmailAddress(testEmailAddress))
                 .thenThrow(ProfileNotFoundException(testEmailAddress))
         val jsonResult = mockMvc
-                .perform(get("/profiles/${testEmailAddress.fullAddress}"))
+                .perform(get("$REQUEST_URL/${testEmailAddress.fullAddress}"))
                 .andExpect(status().isNotFound)
                 .andReturn().response.contentAsString
         val result = objectMapper.readValue(jsonResult, ServerError::class.java)
         assertThat(result.errorMessage, `is`(not(isEmptyString())))
-        assertThat(result.parameters?.get("profileEmailAddress"), `is`(testEmailAddress.fullAddress))
+        assertThat(result.pathParameters?.get("profileEmailAddress"), `is`(testEmailAddress.fullAddress))
         verify(profileService).getProfileByEmailAddress(testEmailAddress)
     }
 
     @Test
     fun `PUT on an existing profile updates it and returns status code 204 (no content)`() {
-        mockMvc.perform(put("/profiles/${testProfile.id}")
+        mockMvc.perform(put("$REQUEST_URL/${testProfile.id}")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonProfile))
                 .andExpect(status().isNoContent)
@@ -116,19 +131,19 @@ class ProfileRestControllerTest() {
     fun `PUT on a non-existent profile returns status code 404 (not found) and a ServerError object`() {
         `when`(profileService.updateProfile(testProfile.id, testProfile))
                 .thenThrow(ProfileNotFoundException(profileId = testProfile.id))
-        val jsonResult = mockMvc.perform(put("/profiles/${testProfile.id}")
+        val jsonResult = mockMvc.perform(put("$REQUEST_URL/${testProfile.id}")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonProfile))
                 .andExpect(status().isNotFound)
                 .andReturn().response.contentAsString
         val result = objectMapper.readValue(jsonResult, ServerError::class.java)
         assertThat(result.errorMessage, `is`("Profile with id '${testProfile.id}' not found"))
-        assertThat(result.parameters?.get("profileId"), `is`(testProfile.id.toString()))
+        assertThat(result.pathParameters?.get("profileId"), `is`(testProfile.id.toString()))
     }
 
     @Test
     fun `DELETE on an existing profile deletes it and returns status code 200 (ok)`() {
-        mockMvc.perform(delete("/profiles/${testProfile.id}"))
+        mockMvc.perform(delete("$REQUEST_URL/${testProfile.id}"))
                 .andExpect(status().isOk)
         verify(profileService).deleteProfile(testProfile.id)
     }
@@ -137,11 +152,11 @@ class ProfileRestControllerTest() {
     fun `DELETE on a non-existent profile returns status code 404 (not found) and a ServerError object`() {
         `when`(profileService.deleteProfile(testProfile.id))
                 .thenThrow(ProfileNotFoundException(profileId = testProfile.id))
-        val jsonResult = mockMvc.perform(delete("/profiles/${testProfile.id}"))
+        val jsonResult = mockMvc.perform(delete("$REQUEST_URL/${testProfile.id}"))
                 .andExpect(status().isNotFound)
                 .andReturn().response.contentAsString
         val result = objectMapper.readValue(jsonResult, ServerError::class.java)
         assertThat(result.errorMessage, `is`("Profile with id '${testProfile.id}' not found"))
-        assertThat(result.parameters?.get("profileId"), `is`(testProfile.id.toString()))
+        assertThat(result.pathParameters?.get("profileId"), `is`(testProfile.id.toString()))
     }
 }

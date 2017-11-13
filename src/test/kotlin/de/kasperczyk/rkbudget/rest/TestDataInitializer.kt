@@ -11,9 +11,9 @@ import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
 
 @Component
-@org.springframework.context.annotation.Profile("test", "dev")
-class TestAndDevDataInitializer(val profileService: ProfileService,
-                                val accountService: AccountService) : ApplicationRunner {
+@org.springframework.context.annotation.Profile("test")
+class TestDataInitializer(val profileService: ProfileService,
+                          val accountService: AccountService) : ApplicationRunner {
 
     override fun run(args: ApplicationArguments?) {
         val profiles = listOf(

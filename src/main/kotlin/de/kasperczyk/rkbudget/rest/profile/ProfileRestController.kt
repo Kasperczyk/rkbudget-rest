@@ -6,6 +6,7 @@ import de.kasperczyk.rkbudget.rest.profile.entity.Profile
 import de.kasperczyk.rkbudget.rest.profile.exception.DuplicateEmailAddressException
 import de.kasperczyk.rkbudget.rest.profile.exception.ProfileNotFoundException
 import org.springframework.http.HttpStatus
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -20,6 +21,11 @@ class ProfileRestController(val profileService: ProfileService) {
     @ResponseStatus(HttpStatus.CONFLICT)
     fun handleDuplicateEmailAddressException(duplicateEmailAddressException: DuplicateEmailAddressException): ServerError =
             ServerError(errorMessage = duplicateEmailAddressException.message)
+
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleBadRequest(): ServerError =
+            ServerError(errorMessage = "Required request body of type ${Profile::class} is missing")
 
     @GetMapping("/{profileEmailAddress:.+}")
     fun getProfileByEmailAddress(@PathVariable profileEmailAddress: EmailAddress): Profile =
@@ -45,6 +51,6 @@ class ProfileRestController(val profileService: ProfileService) {
                 } else {
                     mapOf(pair = "profileId" to profileId.toString())
                 }
-                ServerError(errorMessage = message, parameters = parameters)
+                ServerError(errorMessage = message, pathParameters = parameters)
             }
 }
