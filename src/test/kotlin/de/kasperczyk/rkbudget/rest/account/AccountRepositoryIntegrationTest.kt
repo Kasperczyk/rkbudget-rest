@@ -17,6 +17,6 @@ class AccountRepositoryIntegrationTest : AbstractTransactionalIntegrationTest() 
     fun `findAllByProfileId returns all accounts for the given profile`() {
         val accounts = accountRepository.findAllByProfileId(testProfile.id)
         assertThat(accounts[0], `is`(testAccount))
-        assertThat(accounts.size, `is`(3))
+        assertThat(accounts.size, `is`(5))
     }
 }

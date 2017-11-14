@@ -18,24 +18,12 @@ class ProfileRepositoryIntegrationTest : AbstractTransactionalIntegrationTest() 
     @Test
     fun `findByEmailAddress with a registered email address returns the associated profile`() {
         val profile = profileRepository.findByEmailAddress(testEmailAddress)
-        assertThat(profile, `is`(testProfile.copy(id = 1)))
+        assertThat(profile, `is`(testProfile))
     }
 
     @Test
     fun `findByEmailAddress with a non-existent email address returns null`() {
         val profile = profileRepository.findByEmailAddress(EmailAddress(fullAddress = "non-existent"))
-        assertThat(profile, `is`(nullValue()))
-    }
-
-    @Test
-    fun `findById with an existing id returns the associated profile`() {
-        val profile = profileRepository.findById(1)
-        assertThat(profile, `is`(testProfile.copy(id = 1)))
-    }
-
-    @Test
-    fun `findById with a non-existent id returns null`() {
-        val profile = profileRepository.findById(-1)
         assertThat(profile, `is`(nullValue()))
     }
 }

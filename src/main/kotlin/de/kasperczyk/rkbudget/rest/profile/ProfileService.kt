@@ -20,13 +20,10 @@ class ProfileService(val profileRepository: ProfileRepository) {
             profileRepository.findByEmailAddress(profileEmailAddress) ?:
                     throw ProfileNotFoundException(profileEmailAddress = profileEmailAddress)
 
-    fun getProfileById(profileId: Long): Profile =
-            profileRepository.findById(profileId) ?:
-                    throw ProfileNotFoundException(profileId = profileId)
+    fun getProfileById(profileId: Long): Profile = validateProfile(profileId)
 
-    fun updateProfile(profileId: Long, updatedProfile: Profile) {
-        val profile = profileRepository.findOne(profileId) ?:
-                throw ProfileNotFoundException(profileId = profileId)
+    fun updateProfile(updatedProfile: Profile) {
+        val profile = validateProfile(updatedProfile.id)
         profile.apply {
             firstName = updatedProfile.firstName
             lastName = updatedProfile.lastName
@@ -37,10 +34,12 @@ class ProfileService(val profileRepository: ProfileRepository) {
     }
 
     fun deleteProfile(profileId: Long) {
-        profileRepository.findOne(profileId) ?:
-                throw ProfileNotFoundException(profileId = profileId)
+        validateProfile(profileId)
         profileRepository.delete(profileId)
     }
 
-    fun exists(profileId: Long) = profileRepository.exists(profileId)
+    private fun validateProfile(profileId: Long): Profile =
+            profileRepository.findOne(profileId) ?: throw ProfileNotFoundException(profileId = profileId)
+
+    fun exists(profileId: Long): Boolean = profileRepository.exists(profileId)
 }

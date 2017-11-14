@@ -24,7 +24,7 @@ class DevDataInitializer(val profileService: ProfileService,
                         emailAddress = EmailAddress(fullAddress = "kasperczyk.rene@gmail.com"),
                         password = "secret"
                 ),
-                Profile(firstName = "Christina", lastName = "Kasperczyk", password = "chris123",
+                Profile(firstName = "Christina", lastName = "Kasperczyk", password = "secret",
                         emailAddress = EmailAddress(fullAddress = "christina.kasperczyk@web.de")
                 )
         )
@@ -37,6 +37,22 @@ class DevDataInitializer(val profileService: ProfileService,
                         institute = "Some Bank",
                         iban = "DE12 3456 7890 1234 5678 90",
                         expirationDate = LocalDate.of(2020, 12, 31),
+                        profile = profiles[0]
+                ),
+                Account(
+                        name = "Rene's Savings Account",
+                        accountType = AccountType.SAVINGS,
+                        institute = "Some Bank",
+                        iban = "DE23 4567 8901 2345 6789 01",
+                        expirationDate = LocalDate.of(2021, 1, 31),
+                        profile = profiles[0]
+                ),
+                Account(
+                        name = "Rene's Credit Card",
+                        accountType = AccountType.CREDIT,
+                        institute = "Some Bank",
+                        creditCardNumber = "1234 5678 9012 3456",
+                        expirationDate = LocalDate.of(2019, 2, 28),
                         profile = profiles[0]
                 ),
                 Account(name = "Rene's Cash",

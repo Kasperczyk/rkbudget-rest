@@ -40,9 +40,9 @@ class ProfileServiceTest {
         `when`(profileRepositoryMock.findByEmailAddress(testEmailAddress)).thenReturn(null)
         `when`(profileRepositoryMock.save(testProfile)).thenReturn(testProfile)
         val profile = profileService.createProfile(testProfile)
+        assertThat(profile, `is`(testProfile))
         verify(profileRepositoryMock).findByEmailAddress(testEmailAddress)
         verify(profileRepositoryMock).save(testProfile)
-        assertThat(profile, `is`(testProfile))
     }
 
     @Test
@@ -60,8 +60,8 @@ class ProfileServiceTest {
     fun `getting a profile with a registered email address loads the associated profile from the database and returns it`() {
         `when`(profileRepositoryMock.findByEmailAddress(testEmailAddress)).thenReturn(testProfile)
         val profile = profileService.getProfileByEmailAddress(testEmailAddress)
-        verify(profileRepositoryMock).findByEmailAddress(testEmailAddress)
         assertThat(profile, `is`(testProfile))
+        verify(profileRepositoryMock).findByEmailAddress(testEmailAddress)
     }
 
     @Test
@@ -75,20 +75,19 @@ class ProfileServiceTest {
 
     @Test
     fun `getting a profile with an existing id loads the associated profile from the database and returns it`() {
-        `when`(profileRepositoryMock.findById(testProfile.id)).thenReturn(testProfile)
+        `when`(profileRepositoryMock.findOne(testProfile.id)).thenReturn(testProfile)
         val profile = profileService.getProfileById(testProfile.id)
-        verify(profileRepositoryMock).findById(testProfile.id)
         assertThat(profile, `is`(testProfile))
+        verify(profileRepositoryMock).findOne(testProfile.id)
     }
 
     @Test
     fun `trying to get a profile with a non-existent id throws a ProfileNotFoundException`() {
-        `when`(profileRepositoryMock.findById(testProfile.id))
-                .thenThrow(ProfileNotFoundException(profileId = testProfile.id))
+        `when`(profileRepositoryMock.findOne(testProfile.id)).thenReturn(null)
         expectedException.expect(ProfileNotFoundException::class.java)
         expectedException.expectMessage("Profile with id '${testProfile.id}' not found")
         profileService.getProfileById(testProfile.id)
-        verify(profileRepositoryMock).findById(testProfile.id)
+        verify(profileRepositoryMock).findOne(testProfile.id)
     }
 
     @Test
@@ -98,22 +97,22 @@ class ProfileServiceTest {
                 firstName = "Christina",
                 lastName = "Kasperczyk",
                 emailAddress = EmailAddress(fullAddress = "christina.kasperczyk@web.de"),
-                password = "geheim"
+                password = "password"
         )
         assertThat(updatedProfile, `is`(not(testProfile.copy(id = 1))))
         `when`(profileRepositoryMock.findOne(updatedProfile.id)).thenReturn(testProfile.copy(id = 1))
-        profileService.updateProfile(updatedProfile.id, updatedProfile)
+        profileService.updateProfile(updatedProfile)
         verify(profileRepositoryMock).findOne(updatedProfile.id)
         verify(profileRepositoryMock).save(updatedProfile)
     }
 
     @Test
     fun `trying to update a non-existent profile throws a ProfileNotFoundException`() {
-        val updatedProfile = Profile()
+        val updatedProfile = Profile(id = 1)
         `when`(profileRepositoryMock.findOne(updatedProfile.id)).thenReturn(null)
         expectedException.expect(ProfileNotFoundException::class.java)
         expectedException.expectMessage("Profile with id '${updatedProfile.id}' not found")
-        profileService.updateProfile(updatedProfile.id, updatedProfile)
+        profileService.updateProfile(updatedProfile)
         verify(profileRepositoryMock).findOne(updatedProfile.id)
         verify(profileRepositoryMock, never()).save(updatedProfile)
     }
@@ -122,6 +121,7 @@ class ProfileServiceTest {
     fun `deleting an existing profile deletes that profile from the database`() {
         `when`(profileRepositoryMock.findOne(testProfile.id)).thenReturn(testProfile)
         profileService.deleteProfile(testProfile.id)
+        verify(profileRepositoryMock).findOne(testProfile.id)
         verify(profileRepositoryMock).delete(testProfile.id)
     }
 
@@ -131,6 +131,7 @@ class ProfileServiceTest {
         expectedException.expect(ProfileNotFoundException::class.java)
         expectedException.expectMessage("Profile with id '${testProfile.id}' not found")
         profileService.deleteProfile(testProfile.id)
+        verify(profileRepositoryMock).findOne(testProfile.id)
         verify(profileRepositoryMock, never()).delete(testProfile.id)
     }
 
@@ -139,6 +140,7 @@ class ProfileServiceTest {
         `when`(profileRepositoryMock.exists(testProfile.id)).thenReturn(true)
         val exists = profileService.exists(testProfile.id)
         assertThat(exists, `is`(true))
+        verify(profileRepositoryMock).exists(testProfile.id)
     }
 
     @Test
@@ -146,5 +148,6 @@ class ProfileServiceTest {
         `when`(profileRepositoryMock.exists(testProfile.id)).thenReturn(false)
         val exists = profileService.exists(testProfile.id)
         assertThat(exists, `is`(false))
+        verify(profileRepositoryMock).exists(testProfile.id)
     }
 }

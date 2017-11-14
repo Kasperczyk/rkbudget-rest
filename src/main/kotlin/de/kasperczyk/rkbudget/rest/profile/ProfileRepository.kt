@@ -9,6 +9,4 @@ import org.springframework.stereotype.Repository
 interface ProfileRepository : CrudRepository<Profile, Long> {
 
     fun findByEmailAddress(emailAddress: EmailAddress): Profile?
-
-    fun findById(id: Long): Profile?
 }
