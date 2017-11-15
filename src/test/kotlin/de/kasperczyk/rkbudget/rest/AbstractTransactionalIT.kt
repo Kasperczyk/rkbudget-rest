@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.transaction.annotation.Transactional
 
 @RunWith(SpringRunner::class)
-@SpringBootTest
-@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("integration")
 @Transactional
-abstract class AbstractTransactionalIntegrationTest
+abstract class AbstractTransactionalIT

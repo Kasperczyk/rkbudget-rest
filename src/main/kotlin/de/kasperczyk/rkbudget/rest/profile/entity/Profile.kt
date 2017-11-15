@@ -1,5 +1,6 @@
 package de.kasperczyk.rkbudget.rest.profile.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.persistence.Column
@@ -8,6 +9,7 @@ import javax.persistence.GeneratedValue
 import javax.persistence.Id
 
 @Entity
+@JsonIgnoreProperties(ignoreUnknown = true) // todo why do I need this?
 data class Profile(
 
         @Id

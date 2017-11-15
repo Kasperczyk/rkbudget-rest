@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component
 import java.time.LocalDate
 
 @Component
-@org.springframework.context.annotation.Profile("test")
-class TestDataInitializer(val profileService: ProfileService,
-                          val accountService: AccountService) : ApplicationRunner {
+@org.springframework.context.annotation.Profile("integration")
+class IntegrationDataInitializer(val profileService: ProfileService,
+                                 val accountService: AccountService) : ApplicationRunner {
 
     override fun run(args: ApplicationArguments?) {
         val profiles = listOf(
