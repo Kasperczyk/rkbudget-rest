@@ -1,7 +1,7 @@
 package de.kasperczyk.rkbudget.rest.account
 
 import de.kasperczyk.rkbudget.rest.AbstractDataJpaTest
-import de.kasperczyk.rkbudget.rest.account.entity.Account
+import de.kasperczyk.rkbudget.rest.account.entity.CashAccount
 import de.kasperczyk.rkbudget.rest.profile.entity.Profile
 import de.kasperczyk.rkbudget.rest.testAccount
 import de.kasperczyk.rkbudget.rest.testProfile
@@ -10,7 +10,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-class AccountRepositoryTest : AbstractDataJpaTest() {
+class AccountRepositoryDataJpaTest : AbstractDataJpaTest() {
 
     @Autowired
     private lateinit var accountRepository: AccountRepository
@@ -24,17 +24,13 @@ class AccountRepositoryTest : AbstractDataJpaTest() {
                 password = testProfile.password
         )
         entityManager.persist(profile)
-        val account = Account(
+        val account = CashAccount(
                 name = testAccount.name,
-                accountType = testAccount.accountType,
-                institute = testAccount.institute,
-                iban = testAccount.iban,
-                expirationDate = testAccount.expirationDate,
                 profile = profile
         )
         entityManager.persist(account)
         val accounts = accountRepository.findAllByProfileId(profile.id)
-        assertThat(accounts[0], `is`(account))
+        assertThat(accounts[0] as CashAccount, `is`(account))
         assertThat(accounts.size, `is`(1))
     }
 }

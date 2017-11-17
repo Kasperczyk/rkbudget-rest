@@ -11,7 +11,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-class ProfileRepositoryTest : AbstractDataJpaTest() {
+class ProfileRepositoryDataJpaTest : AbstractDataJpaTest() {
 
     @Autowired
     private lateinit var profileRepository: ProfileRepository

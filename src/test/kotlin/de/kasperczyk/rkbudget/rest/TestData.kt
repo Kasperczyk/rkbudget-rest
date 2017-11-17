@@ -1,7 +1,6 @@
 package de.kasperczyk.rkbudget.rest
 
-import de.kasperczyk.rkbudget.rest.account.entity.Account
-import de.kasperczyk.rkbudget.rest.account.entity.AccountType
+import de.kasperczyk.rkbudget.rest.account.entity.GiroAccount
 import de.kasperczyk.rkbudget.rest.profile.entity.EmailAddress
 import de.kasperczyk.rkbudget.rest.profile.entity.Profile
 import java.time.LocalDate
@@ -15,11 +14,10 @@ val testProfile = Profile(
         password = "secret"
 )
 
-val testAccount = Account(
-        name = "Rene's Giro Account",
-        accountType = AccountType.GIRO,
-        institute = "Some Bank",
-        iban = "DE12 3456 7890 1234 5678 90",
-        expirationDate = LocalDate.of(2020, 12, 31),
-        profile = testProfile
+val testAccount = GiroAccount(
+        name = "My Giro Account",
+        profile = testProfile,
+        expirationDate = LocalDate.of(2022, 12, 31),
+        institute = "Some bank",
+        iban = "DE 12345678 1234567890 12"
 )

@@ -3,6 +3,7 @@ package de.kasperczyk.rkbudget.rest.account
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.kasperczyk.rkbudget.rest.ServerError
 import de.kasperczyk.rkbudget.rest.account.entity.Account
+import de.kasperczyk.rkbudget.rest.account.entity.GiroAccount
 import de.kasperczyk.rkbudget.rest.profile.exception.ProfileNotFoundException
 import de.kasperczyk.rkbudget.rest.testAccount
 import de.kasperczyk.rkbudget.rest.testProfile
@@ -57,7 +58,7 @@ class AccountRestControllerTest {
                 .andReturn().response.contentAsString
         val result = objectMapper.readValue(jsonResult, Account::class.java)
         verify(accountServiceMock).createAccount(profileId = testProfile.id, account = testAccount)
-        assertThat(result, `is`(testAccount))
+        assertThat(result as GiroAccount, `is`(testAccount))
     }
 
     @Test

@@ -1,7 +1,7 @@
 package de.kasperczyk.rkbudget.rest.account
 
 import de.kasperczyk.rkbudget.rest.account.entity.Account
-import de.kasperczyk.rkbudget.rest.account.entity.AccountType
+import de.kasperczyk.rkbudget.rest.account.entity.GiroAccount
 import de.kasperczyk.rkbudget.rest.account.exception.AccountNotFoundException
 import de.kasperczyk.rkbudget.rest.profile.ProfileService
 import de.kasperczyk.rkbudget.rest.profile.exception.ProfileNotFoundException
@@ -44,11 +44,11 @@ class AccountServiceTest {
     fun `creating an account saves is to the database and returns it`() {
         `when`(profileServiceMock.getProfileById(testProfile.id)).thenReturn(testProfile)
         `when`(accountRepositoryMock.save(testAccount)).thenReturn(testAccount)
-        val account = accountService.createAccount(testProfile.id, testAccount)
+        val result = accountService.createAccount(testProfile.id, testAccount)
+        assertThat(result as GiroAccount, `is`(testAccount))
+        assertThat(result.profile, `is`(testProfile))
         verify(profileServiceMock).getProfileById(testProfile.id)
         verify(accountRepositoryMock).save(testAccount)
-        assertThat(account, `is`(testAccount))
-        assertThat(account.profile, `is`(testProfile))
     }
 
     @Test
@@ -66,8 +66,9 @@ class AccountServiceTest {
     fun `getting all accounts for a profile loads the associated accounts from the database and returns them`() {
         `when`(profileServiceMock.exists(testProfile.id)).thenReturn(true)
         `when`(accountRepositoryMock.findAllByProfileId(testProfile.id)).thenReturn(listOf(testAccount))
-        val accounts = accountService.getAllAccountsForProfile(testProfile.id)
-        assertThat(accounts, `is`(listOf(testAccount)))
+        val result = accountService.getAllAccountsForProfile(testProfile.id)
+        assertThat(result, `is`(listOf<Account>(testAccount)))
+        verify(profileServiceMock).exists(testProfile.id)
         verify(accountRepositoryMock).findAllByProfileId(testProfile.id)
     }
 
@@ -77,13 +78,13 @@ class AccountServiceTest {
         expectedException.expect(ProfileNotFoundException::class.java)
         expectedException.expectMessage("Profile with id '${testProfile.id}' not found")
         accountService.getAllAccountsForProfile(testProfile.id)
+        verify(profileServiceMock).exists(testProfile.id)
+        verify(accountRepositoryMock, never()).findAllByProfileId(testProfile.id)
     }
 
     @Test
     fun `updating an existing account updates that account in the database`() {
-        val updatedAccount = Account(
-                id = 1,
-                accountType = AccountType.GIRO,
+        val updatedAccount = GiroAccount(
                 name = "Other Giro Account",
                 institute = "Other Bank",
                 iban = "some iban",
@@ -93,10 +94,11 @@ class AccountServiceTest {
         assertThat(updatedAccount, `is`(not(testAccount)))
         `when`(profileServiceMock.exists(updatedAccount.profile.id)).thenReturn(true)
         `when`(accountRepositoryMock.exists(updatedAccount.id)).thenReturn(true)
-        `when`(accountRepositoryMock.findOne(updatedAccount.id)).thenReturn(testAccount.copy(id = 1))
+        `when`(accountRepositoryMock.findOne(updatedAccount.id)).thenReturn(testAccount)
         accountService.updateAccount(updatedAccount.id, updatedAccount)
+        verify(profileServiceMock).exists(updatedAccount.profile.id)
         verify(accountRepositoryMock).findOne(updatedAccount.id)
-        verify(accountRepositoryMock).save(updatedAccount)
+        verify(accountRepositoryMock).save(testAccount)
     }
 
     @Test

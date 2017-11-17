@@ -39,8 +39,8 @@ class ProfileServiceTest {
     fun `creating a profile saves it to the database and returns it`() {
         `when`(profileRepositoryMock.findByEmailAddress(testEmailAddress)).thenReturn(null)
         `when`(profileRepositoryMock.save(testProfile)).thenReturn(testProfile)
-        val profile = profileService.createProfile(testProfile)
-        assertThat(profile, `is`(testProfile))
+        val result = profileService.createProfile(testProfile)
+        assertThat(result, `is`(testProfile))
         verify(profileRepositoryMock).findByEmailAddress(testEmailAddress)
         verify(profileRepositoryMock).save(testProfile)
     }
@@ -59,8 +59,8 @@ class ProfileServiceTest {
     @Test
     fun `getting a profile with a registered email address loads the associated profile from the database and returns it`() {
         `when`(profileRepositoryMock.findByEmailAddress(testEmailAddress)).thenReturn(testProfile)
-        val profile = profileService.getProfileByEmailAddress(testEmailAddress)
-        assertThat(profile, `is`(testProfile))
+        val result = profileService.getProfileByEmailAddress(testEmailAddress)
+        assertThat(result, `is`(testProfile))
         verify(profileRepositoryMock).findByEmailAddress(testEmailAddress)
     }
 
@@ -76,8 +76,8 @@ class ProfileServiceTest {
     @Test
     fun `getting a profile with an existing id loads the associated profile from the database and returns it`() {
         `when`(profileRepositoryMock.findOne(testProfile.id)).thenReturn(testProfile)
-        val profile = profileService.getProfileById(testProfile.id)
-        assertThat(profile, `is`(testProfile))
+        val result = profileService.getProfileById(testProfile.id)
+        assertThat(result, `is`(testProfile))
         verify(profileRepositoryMock).findOne(testProfile.id)
     }
 
@@ -138,16 +138,16 @@ class ProfileServiceTest {
     @Test
     fun `exists returns true if the profile exists`() {
         `when`(profileRepositoryMock.exists(testProfile.id)).thenReturn(true)
-        val exists = profileService.exists(testProfile.id)
-        assertThat(exists, `is`(true))
+        val result = profileService.exists(testProfile.id)
+        assertThat(result, `is`(true))
         verify(profileRepositoryMock).exists(testProfile.id)
     }
 
     @Test
     fun `exists returns false if the profile does not exist`() {
         `when`(profileRepositoryMock.exists(testProfile.id)).thenReturn(false)
-        val exists = profileService.exists(testProfile.id)
-        assertThat(exists, `is`(false))
+        val result = profileService.exists(testProfile.id)
+        assertThat(result, `is`(false))
         verify(profileRepositoryMock).exists(testProfile.id)
     }
 }

@@ -1,11 +1,18 @@
 package de.kasperczyk.rkbudget.rest.account.entity
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import de.kasperczyk.rkbudget.rest.profile.entity.Profile
-import java.time.LocalDate
 import javax.persistence.*
 
 @Entity
-data class Account(
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "TYPE")
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "@class"
+)
+abstract class Account(
 
         @Id
         @GeneratedValue
@@ -14,22 +21,23 @@ data class Account(
         @Column
         var name: String = "",
 
-        @Column
-        val accountType: AccountType = AccountType.CUSTOM,
-
-        @Column
-        var institute: String? = null,
-
-        @Column(unique = true)
-        var iban: String? = null,
-
-        @Column(unique = true)
-        var creditCardNumber: String? = null,
-
-        @Column
-        var expirationDate: LocalDate? = null,
-
         @ManyToOne
         @JoinColumn(name = "profile_id")
         var profile: Profile = Profile()
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Account) return false
+
+        if (name != other.name) return false
+        if (profile != other.profile) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + profile.hashCode()
+        return result
+    }
+}

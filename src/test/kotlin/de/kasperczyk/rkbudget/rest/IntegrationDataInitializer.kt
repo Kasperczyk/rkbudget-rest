@@ -1,8 +1,7 @@
 package de.kasperczyk.rkbudget.rest
 
 import de.kasperczyk.rkbudget.rest.account.AccountService
-import de.kasperczyk.rkbudget.rest.account.entity.Account
-import de.kasperczyk.rkbudget.rest.account.entity.AccountType
+import de.kasperczyk.rkbudget.rest.account.entity.*
 import de.kasperczyk.rkbudget.rest.profile.ProfileService
 import de.kasperczyk.rkbudget.rest.profile.entity.EmailAddress
 import de.kasperczyk.rkbudget.rest.profile.entity.Profile
@@ -18,7 +17,12 @@ class IntegrationDataInitializer(val profileService: ProfileService,
 
     override fun run(args: ApplicationArguments?) {
         val profiles = listOf(
-                testProfile,
+                Profile(
+                        firstName = "Rene",
+                        lastName = "Kasperczyk",
+                        emailAddress = EmailAddress(fullAddress = "kasperczyk.rene@gmail.com"),
+                        password = "secret"
+                ),
                 Profile(firstName = "Christina", lastName = "Kasperczyk", password = "secret",
                         emailAddress = EmailAddress(fullAddress = "christina.kasperczyk@web.de")
                 )
@@ -26,32 +30,38 @@ class IntegrationDataInitializer(val profileService: ProfileService,
         profiles.forEach { profileService.createProfile(it) }
 
         val accounts = listOf(
-                testAccount,
-                Account(
+                GiroAccount(
+                        name = "Rene's Giro Account",
+                        institute = "Some Bank",
+                        iban = "DE12 3456 7890 1234 5678 90",
+                        expirationDate = LocalDate.of(2020, 12, 31),
+                        profile = profiles[0]
+                ),
+                SavingsAccount(
                         name = "Rene's Savings Account",
-                        accountType = AccountType.SAVINGS,
                         institute = "Some Bank",
                         iban = "DE23 4567 8901 2345 6789 01",
                         expirationDate = LocalDate.of(2021, 1, 31),
                         profile = profiles[0]
                 ),
-                Account(
+                CreditAccount(
                         name = "Rene's Credit Card",
-                        accountType = AccountType.CREDIT,
-                        institute = "Some Bank",
+                        issuer = "Some Bank",
                         creditCardNumber = "1234 5678 9012 3456",
                         expirationDate = LocalDate.of(2019, 2, 28),
                         profile = profiles[0]
                 ),
-                Account(name = "Rene's Cash",
-                        accountType = AccountType.CASH
+                CashAccount(
+                        name = "Rene's Cash",
+                        profile = profiles[0]
                 ),
-                Account(name = "Rene's Boulder Card",
-                        accountType = AccountType.CUSTOM
+                CustomAccount(
+                        name = "Rene's Boulder Card",
+                        profile = profiles[0]
                 )
         )
         accounts.forEach { accountService.createAccount(profiles.get(0).id, it) }
 
-        println("\n>>> Test data initialization complete\n")
+        println("\n>>> Integration data initialization complete\n")
     }
 }

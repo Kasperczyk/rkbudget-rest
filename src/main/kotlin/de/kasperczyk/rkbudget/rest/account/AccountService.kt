@@ -1,6 +1,9 @@
 package de.kasperczyk.rkbudget.rest.account
 
 import de.kasperczyk.rkbudget.rest.account.entity.Account
+import de.kasperczyk.rkbudget.rest.account.entity.BankAccount
+import de.kasperczyk.rkbudget.rest.account.entity.CreditAccount
+import de.kasperczyk.rkbudget.rest.account.entity.ExpirableAccount
 import de.kasperczyk.rkbudget.rest.account.exception.AccountNotFoundException
 import de.kasperczyk.rkbudget.rest.profile.ProfileService
 import de.kasperczyk.rkbudget.rest.profile.exception.ProfileNotFoundException
@@ -26,11 +29,23 @@ class AccountService(val accountRepository: AccountRepository,
         verifyAccount(accountId)
         val account = accountRepository.findOne(accountId)
         account.apply {
+            when (account) {
+                is ExpirableAccount -> {
+                    updatedAccount as ExpirableAccount
+                    account.expirationDate = updatedAccount.expirationDate
+                }
+                is BankAccount -> {
+                    updatedAccount as BankAccount
+                    account.institute = updatedAccount.institute
+                    account.iban = updatedAccount.iban
+                }
+                is CreditAccount -> {
+                    updatedAccount as CreditAccount
+                    account.issuer = updatedAccount.issuer
+                    account.creditCardNumber = updatedAccount.creditCardNumber
+                }
+            }
             name = updatedAccount.name
-            institute = updatedAccount.institute
-            iban = updatedAccount.iban
-            creditCardNumber = updatedAccount.creditCardNumber
-            expirationDate = updatedAccount.expirationDate
             profile = updatedAccount.profile
         }
         accountRepository.save(account)
