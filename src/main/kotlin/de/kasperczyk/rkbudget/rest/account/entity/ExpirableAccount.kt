@@ -9,8 +9,9 @@ import javax.persistence.Entity
 abstract class ExpirableAccount(
         name: String,
         profile: Profile,
-        @Column var expirationDate: LocalDate
-) : Account(name = name, profile = profile) {
+        @Column var expirationDate: LocalDate,
+        accountType: AccountType
+) : Account(name = name, profile = profile, accountType = accountType) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

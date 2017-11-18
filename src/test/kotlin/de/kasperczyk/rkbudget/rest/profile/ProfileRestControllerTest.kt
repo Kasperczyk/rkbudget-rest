@@ -146,6 +146,21 @@ class ProfileRestControllerTest {
     }
 
     @Test
+    fun `PUT without a valid body returns status code 400 (bad request) and a ServerError object`() {
+        val jsonResult = mockMvc
+                .perform(put("$REQUEST_URL/${testProfile.id}")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(""))
+                .andExpect(status().isBadRequest)
+                .andReturn().response.contentAsString
+        val result = objectMapper.readValue(jsonResult, ServerError::class.java)
+        assertThat(result.errorMessage, `is`("Required request body of type ${Profile::class} is missing"))
+        assertThat(result.pathParameters, `is`(nullValue()))
+        assertThat(result.requestParameters, `is`(nullValue()))
+        verify(profileServiceMock, never()).createProfile(testProfile)
+    }
+
+    @Test
     fun `PUT returns status code 400 (bad request) and a ServerError object if the ids do not match`() {
         val jsonResult = mockMvc
                 .perform(put("$REQUEST_URL/${testProfile.id - 1}")

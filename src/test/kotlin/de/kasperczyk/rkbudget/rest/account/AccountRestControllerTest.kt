@@ -20,7 +20,6 @@ import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.http.MediaType
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -77,8 +76,57 @@ class AccountRestControllerTest {
     }
 
     @Test
-    fun `GET for all accounts of an existing profile returns all accounts and status code 200 (ok)`() {
-        mockMvc.perform(get(REQUEST_URL))
-                .andExpect(status().isOk)
+    fun `POST without a valid body returns status code 400 (bad request) and a ServerError object`() {
+
+    }
+
+    @Test
+    fun `GET for a non-existent profile returns status code 404 (not found) and a ServerError object`() {
+
+    }
+
+    @Test
+    fun `GET for a non-existent account returns status code 404 (not found) and a ServerError object`() {
+
+    }
+
+    @Test
+    fun `GET for an available profile returns status code 200 (ok) and all accounts of that profile`() {
+
+    }
+
+    @Test
+    fun `PUT on a non-existent profile returns status code 404 (not found) and a ServerError object`() {
+
+    }
+
+    @Test
+    fun `PUT on a non-existent account returns status code 404 (not found) and a ServerError object`() {
+
+    }
+
+    @Test
+    fun `PUT returns status code 400 (bad request) and a ServerError object if the ids do not match`() {
+
+    }
+
+    @Test
+    fun `PUT on an existing account updates it and returns status code 204 (no content)`() {
+
+    }
+
+    @Test
+    fun `DELETE on a non-existent profile returns status code 404 (not found) and a ServerError object`() {
+
+    }
+
+    @Test
+    fun `DELETE on a non-existent account returns status code 404 (not found) and a ServerError object`() {
+
+    }
+
+    @Test
+    fun `DELETE on an existing account deletes it and returns status code 200 (ok)`() {
+
     }
 }

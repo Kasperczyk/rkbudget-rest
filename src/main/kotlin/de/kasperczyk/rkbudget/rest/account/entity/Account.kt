@@ -23,7 +23,9 @@ abstract class Account(
 
         @ManyToOne
         @JoinColumn(name = "profile_id")
-        var profile: Profile = Profile()
+        var profile: Profile = Profile(),
+
+        val accountType: AccountType
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -31,13 +33,16 @@ abstract class Account(
 
         if (name != other.name) return false
         if (profile != other.profile) return false
+        if (accountType != other.accountType) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = name.hashCode()
+        var result = id.hashCode()
+        result = 31 * result + name.hashCode()
         result = 31 * result + profile.hashCode()
+        result = 31 * result + accountType.hashCode()
         return result
     }
 }

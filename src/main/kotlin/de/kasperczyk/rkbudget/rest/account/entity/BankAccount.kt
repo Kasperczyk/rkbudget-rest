@@ -11,8 +11,9 @@ abstract class BankAccount(
         profile: Profile,
         expirationDate: LocalDate,
         @Column var institute: String,
-        @Column var iban: String
-) : ExpirableAccount(name, profile, expirationDate) {
+        @Column var iban: String,
+        accountType: AccountType
+) : ExpirableAccount(name, profile, expirationDate, accountType) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
