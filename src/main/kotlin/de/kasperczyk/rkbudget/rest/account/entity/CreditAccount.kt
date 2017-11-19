@@ -8,11 +8,11 @@ import javax.persistence.Entity
 
 @Entity
 @DiscriminatorValue(CREDIT_ACCOUNT)
-class CreditAccount(name: String,
-                    profile: Profile,
-                    expirationDate: LocalDate,
-                    @Column var issuer: String,
-                    @Column var creditCardNumber: String
+class CreditAccount(name: String = "",
+                    profile: Profile = Profile(),
+                    expirationDate: LocalDate = LocalDate.now(),
+                    @Column var issuer: String = "",
+                    @Column var creditCardNumber: String = ""
 ) : ExpirableAccount(name, profile, expirationDate, AccountType.CREDIT) {
 
     override fun equals(other: Any?): Boolean {

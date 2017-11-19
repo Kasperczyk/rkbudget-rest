@@ -7,11 +7,11 @@ import javax.persistence.Entity
 
 @Entity
 @DiscriminatorValue(SAVINGS_ACCOUNT)
-class SavingsAccount(name: String,
-                     profile: Profile,
-                     expirationDate: LocalDate,
-                     institute: String,
-                     iban: String
+class SavingsAccount(name: String = "",
+                     profile: Profile = Profile(),
+                     expirationDate: LocalDate = LocalDate.now(),
+                     institute: String = "",
+                     iban: String = ""
 ) : BankAccount(name, profile, expirationDate, institute, iban, AccountType.SAVINGS) {
 
     override fun toString(): String {

@@ -2,10 +2,10 @@ package de.kasperczyk.rkbudget.rest.profile
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import de.kasperczyk.rkbudget.rest.ServerError
+import de.kasperczyk.rkbudget.rest.exception.IdsDoNotMatchException
 import de.kasperczyk.rkbudget.rest.profile.entity.EmailAddress
 import de.kasperczyk.rkbudget.rest.profile.entity.Profile
 import de.kasperczyk.rkbudget.rest.profile.exception.DuplicateEmailAddressException
-import de.kasperczyk.rkbudget.rest.profile.exception.IdsDoNotMatchException
 import de.kasperczyk.rkbudget.rest.profile.exception.ProfileNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
@@ -29,7 +29,7 @@ class ProfileRestController(val profileService: ProfileService, val objectMapper
             if (profileId == updatedProfile.id) {
                 profileService.updateProfile(updatedProfile)
             } else {
-                throw IdsDoNotMatchException(profileId, updatedProfile)
+                throw IdsDoNotMatchException(profileId, "profileId", updatedProfile.id)
             }
 
     @DeleteMapping("/{profileId}")
@@ -69,8 +69,7 @@ class ProfileRestController(val profileService: ProfileService, val objectMapper
             with(idsDoNotMatchException) {
                 ServerError(
                         errorMessage = idsDoNotMatchException.message,
-                        pathVariables = mapOf("profileId" to "$profileId"),
-                        requestBody = objectMapper.writeValueAsString(profile)
+                        pathVariables = mapOf("profileId" to "$pathId")
                 )
             }
 }

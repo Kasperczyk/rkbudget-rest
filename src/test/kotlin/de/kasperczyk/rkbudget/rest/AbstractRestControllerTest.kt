@@ -34,6 +34,10 @@ abstract class AbstractRestControllerTest {
                             .andReturn().response.contentAsString,
                     valueType)
 
+    protected fun performRequestForServerError(request: MockHttpServletRequestBuilder,
+                                               expectedResult: ResultMatcher) =
+            performRequestForObject(request, expectedResult, ServerError::class.java)
+
     protected fun performRequest(request: MockHttpServletRequestBuilder, expectedResult: ResultMatcher) =
             mockMvc.perform(request)
                     .andExpect(expectedResult)
@@ -43,22 +47,22 @@ abstract class AbstractRestControllerTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(content)
 
-    protected fun doGetRequest(addedPath: String): MockHttpServletRequestBuilder =
-            get("$REQUEST_URL/$addedPath")
+    protected fun doGetRequest(addedPath: String = ""): MockHttpServletRequestBuilder =
+            get(REQUEST_URL + addedPath)
 
-    protected fun doPutRequest(addedPath: String, content: String): MockHttpServletRequestBuilder =
-            put("$REQUEST_URL/$addedPath")
+    protected fun doPutRequest(requestUrl: String = REQUEST_URL, content: String): MockHttpServletRequestBuilder =
+            put(requestUrl)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(content)
 
-    protected fun doDeleteRequest(addedPath: String): MockHttpServletRequestBuilder =
-            delete("$REQUEST_URL/$addedPath")
+    protected fun doDeleteRequest(requestUrl: String = REQUEST_URL): MockHttpServletRequestBuilder =
+            delete(requestUrl)
 
     protected fun assertServerError(serverError: ServerError,
                                     expectedErrorMessage: String,
-                                    expectedPathParameters: Map<String, String>?,
-                                    expectedRequestParameters: Map<String, String>?,
-                                    expectedRequestBody: String?) {
+                                    expectedPathParameters: Map<String, String>? = null,
+                                    expectedRequestParameters: Map<String, String>? = null,
+                                    expectedRequestBody: String? = null) {
         assertThat(serverError.errorMessage, `is`(expectedErrorMessage))
         assertThat(serverError.pathVariables, `is`(expectedPathParameters))
         assertThat(serverError.requestParameters, `is`(expectedRequestParameters))

@@ -8,8 +8,8 @@ import javax.persistence.Entity
 
 @Entity
 @DiscriminatorValue(CUSTOM_ACCOUNT)
-class CustomAccount(name: String,
-                    profile: Profile,
+class CustomAccount(name: String = "",
+                    profile: Profile = Profile(),
                     @Column val expirationDate: LocalDate? = null
 ) : Account(name = name, profile = profile, accountType = AccountType.CUSTOM) {
 

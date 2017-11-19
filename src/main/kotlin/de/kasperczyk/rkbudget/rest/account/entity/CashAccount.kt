@@ -6,8 +6,8 @@ import javax.persistence.Entity
 
 @Entity
 @DiscriminatorValue(CASH_ACCOUNT)
-class CashAccount(name: String,
-                  profile: Profile
+class CashAccount(name: String = "",
+                  profile: Profile = Profile()
 ) : Account(name = name, profile = profile, accountType = AccountType.CASH) {
 
     override fun toString(): String = "CashAccount(id=$id, name='$name', profile=$profile)"

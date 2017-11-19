@@ -1,7 +1,6 @@
 package de.kasperczyk.rkbudget.rest.profile
 
 import de.kasperczyk.rkbudget.rest.AbstractRestControllerTest
-import de.kasperczyk.rkbudget.rest.ServerError
 import de.kasperczyk.rkbudget.rest.profile.entity.Profile
 import de.kasperczyk.rkbudget.rest.profile.exception.DuplicateEmailAddressException
 import de.kasperczyk.rkbudget.rest.profile.exception.ProfileNotFoundException
@@ -43,23 +42,17 @@ class ProfileRestControllerTest : AbstractRestControllerTest() {
     @Test
     fun `POST with an already existing email address returns status code 409 (conflict) and a ServerError object`() {
         `when`(profileServiceMock.createProfile(testProfile)).thenThrow(DuplicateEmailAddressException(testProfile))
-        val result = performRequestForObject(doPostRequest(content = jsonProfile), status().isConflict, ServerError::class.java)
+        val result = performRequestForServerError(doPostRequest(content = jsonProfile), status().isConflict)
         assertServerError(result,
                 expectedErrorMessage = "A profile with email address '${testProfile.emailAddress.fullAddress}' has already been registered",
-                expectedPathParameters = null,
-                expectedRequestParameters = null,
                 expectedRequestBody = jsonProfile)
         verify(profileServiceMock).createProfile(testProfile)
     }
 
     @Test
     fun `POST without a valid body returns status code 400 (bad request) and a ServerError object`() {
-        val result = performRequestForObject(doPostRequest(content = "invalid"), status().isBadRequest, ServerError::class.java)
-        assertServerError(result,
-                expectedErrorMessage = "Required request body of type ${Profile::class} is missing",
-                expectedPathParameters = null,
-                expectedRequestParameters = null,
-                expectedRequestBody = null)
+        val result = performRequestForServerError(doPostRequest(content = "invalid"), status().isBadRequest)
+        assertServerError(result, expectedErrorMessage = "Required request body of type ${Profile::class} is missing")
         verify(profileServiceMock, never()).createProfile(testProfile)
     }
 
@@ -75,19 +68,16 @@ class ProfileRestControllerTest : AbstractRestControllerTest() {
     fun `GET for a non-existent profile returns status code 404 (not found) and a ServerError object`() {
         `when`(profileServiceMock.getProfileByEmailAddress(testEmailAddress))
                 .thenThrow(ProfileNotFoundException(testEmailAddress))
-        val result = performRequestForObject(doGetRequest("/${testEmailAddress.fullAddress}"),
-                status().isNotFound, ServerError::class.java)
+        val result = performRequestForServerError(doGetRequest("/${testEmailAddress.fullAddress}"), status().isNotFound)
         assertServerError(result,
                 expectedErrorMessage = "Profile with email address '${testEmailAddress.fullAddress}' not found",
-                expectedPathParameters = mapOf("profileEmailAddress" to testEmailAddress.fullAddress),
-                expectedRequestParameters = null,
-                expectedRequestBody = null)
+                expectedPathParameters = mapOf("profileEmailAddress" to testEmailAddress.fullAddress))
         verify(profileServiceMock).getProfileByEmailAddress(testEmailAddress)
     }
 
     @Test
     fun `PUT on an existing profile updates it and returns status code 204 (no content)`() {
-        performRequest(doPutRequest(addedPath = "/${testProfile.id}", content = jsonProfile), status().isNoContent)
+        performRequest(doPutRequest(REQUEST_URL + "/${testProfile.id}", content = jsonProfile), status().isNoContent)
         verify(profileServiceMock).updateProfile(testProfile)
     }
 
@@ -95,44 +85,38 @@ class ProfileRestControllerTest : AbstractRestControllerTest() {
     fun `PUT on a non-existent profile returns status code 404 (not found) and a ServerError object`() {
         `when`(profileServiceMock.updateProfile(testProfile))
                 .thenThrow(ProfileNotFoundException(profileId = testProfile.id))
-        val result = performRequestForObject(doPutRequest(addedPath = "/${testProfile.id}", content = jsonProfile),
-                status().isNotFound, ServerError::class.java)
+        val result = performRequestForServerError(doPutRequest(
+                requestUrl = REQUEST_URL + "/${testProfile.id}", content = jsonProfile), status().isNotFound)
         assertServerError(result,
                 expectedErrorMessage = "Profile with id '${testProfile.id}' not found",
-                expectedPathParameters = mapOf("profileId" to testProfile.id.toString()),
-                expectedRequestParameters = null,
-                expectedRequestBody = null)
+                expectedPathParameters = mapOf("profileId" to testProfile.id.toString()))
         verify(profileServiceMock).updateProfile(testProfile)
     }
 
     @Test
     fun `PUT without a valid body returns status code 400 (bad request) and a ServerError object`() {
-        val result = performRequestForObject(doPutRequest(addedPath = "/${testProfile.id}", content = "invalid"),
-                status().isBadRequest, ServerError::class.java)
-        assertServerError(result,
-                expectedErrorMessage = "Required request body of type ${Profile::class} is missing",
-                expectedPathParameters = null,
-                expectedRequestParameters = null,
-                expectedRequestBody = null)
+        val result = performRequestForServerError(doPutRequest(
+                requestUrl = REQUEST_URL + "/${testProfile.id}", content = "invalid"),
+                status().isBadRequest)
+        assertServerError(result, expectedErrorMessage = "Required request body of type ${Profile::class} is missing")
         verify(profileServiceMock, never()).createProfile(testProfile)
     }
 
     @Test
     fun `PUT returns status code 400 (bad request) and a ServerError object if the ids do not match`() {
-        val result = performRequestForObject(doPutRequest(addedPath = "/${testProfile.id - 1}", content = jsonProfile),
-                status().isBadRequest, ServerError::class.java)
+        val result = performRequestForServerError(doPutRequest(
+                requestUrl = REQUEST_URL + "/${testProfile.id - 1}", content = jsonProfile),
+                status().isBadRequest)
         assertServerError(result,
-                expectedErrorMessage = "Ids do not match. The path specified id '${testProfile.id - 1}', " +
+                expectedErrorMessage = "Ids do not match. The id specified is '${testProfile.id - 1}', " +
                         "the object in the request body contained id '${testProfile.id}'",
-                expectedPathParameters = mapOf("profileId" to "${testProfile.id - 1}"),
-                expectedRequestParameters = null,
-                expectedRequestBody = jsonProfile)
+                expectedPathParameters = mapOf("profileId" to "${testProfile.id - 1}"))
         verify(profileServiceMock, never()).updateProfile(testProfile)
     }
 
     @Test
     fun `DELETE on an existing profile deletes it and returns status code 200 (ok)`() {
-        performRequest(doDeleteRequest("/${testProfile.id}"), status().isOk)
+        performRequest(doDeleteRequest(requestUrl = REQUEST_URL + "/${testProfile.id}"), status().isOk)
         verify(profileServiceMock).deleteProfile(testProfile.id)
     }
 
@@ -140,12 +124,11 @@ class ProfileRestControllerTest : AbstractRestControllerTest() {
     fun `DELETE on a non-existent profile returns status code 404 (not found) and a ServerError object`() {
         `when`(profileServiceMock.deleteProfile(testProfile.id))
                 .thenThrow(ProfileNotFoundException(profileId = testProfile.id))
-        val result = performRequestForObject(doDeleteRequest(addedPath = "/${testProfile.id}"), status().isNotFound, ServerError::class.java)
+        val result = performRequestForServerError(doDeleteRequest(
+                requestUrl = REQUEST_URL + "/${testProfile.id}"), status().isNotFound)
         assertServerError(result,
                 expectedErrorMessage = "Profile with id '${testProfile.id}' not found",
-                expectedPathParameters = mapOf("profileId" to "${testProfile.id}"),
-                expectedRequestParameters = null,
-                expectedRequestBody = null)
+                expectedPathParameters = mapOf("profileId" to "${testProfile.id}"))
         verify(profileServiceMock).deleteProfile(testProfile.id)
     }
 }
