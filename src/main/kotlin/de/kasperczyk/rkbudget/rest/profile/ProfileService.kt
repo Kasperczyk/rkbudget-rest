@@ -13,7 +13,7 @@ class ProfileService(val profileRepository: ProfileRepository) {
             if (profileRepository.findByEmailAddress(profile.emailAddress) == null) {
                 profileRepository.save(profile)
             } else {
-                throw DuplicateEmailAddressException(profile.emailAddress)
+                throw DuplicateEmailAddressException(profile)
             }
 
     fun getProfileByEmailAddress(profileEmailAddress: EmailAddress): Profile =
@@ -23,7 +23,7 @@ class ProfileService(val profileRepository: ProfileRepository) {
     fun getProfileById(profileId: Long): Profile = validateProfile(profileId)
 
     fun updateProfile(updatedProfile: Profile) {
-        val profile = validateProfile(updatedProfile.id)
+        val profile = validateProfile(updatedProfile.id, updatedProfile)
         profile.apply {
             firstName = updatedProfile.firstName
             lastName = updatedProfile.lastName
@@ -38,7 +38,7 @@ class ProfileService(val profileRepository: ProfileRepository) {
         profileRepository.delete(profileId)
     }
 
-    private fun validateProfile(profileId: Long): Profile =
+    private fun validateProfile(profileId: Long, profile: Profile? = null): Profile =
             profileRepository.findOne(profileId) ?: throw ProfileNotFoundException(profileId = profileId)
 
     fun exists(profileId: Long): Boolean = profileRepository.exists(profileId)

@@ -20,13 +20,13 @@ class AccountService(val accountRepository: AccountRepository,
     }
 
     fun getAllAccountsForProfile(profileId: Long): List<Account> {
-        verifyProfile(profileId)
+        validateProfile(profileId)
         return accountRepository.findAllByProfileId(profileId)
     }
 
     fun updateAccount(accountId: Long, updatedAccount: Account) {
-        verifyProfile(updatedAccount.profile.id)
-        verifyAccount(accountId)
+        validateProfile(updatedAccount.profile.id)
+        validateAccount(accountId)
         val account = accountRepository.findOne(accountId)
         account.apply {
             when (account) {
@@ -52,18 +52,18 @@ class AccountService(val accountRepository: AccountRepository,
     }
 
     fun deleteAccount(profileId: Long, accountId: Long) {
-        verifyProfile(profileId)
-        verifyAccount(accountId)
+        validateProfile(profileId)
+        validateAccount(accountId)
         accountRepository.delete(accountId)
     }
 
-    private fun verifyProfile(profileId: Long) {
+    private fun validateProfile(profileId: Long) {
         if (!profileService.exists(profileId)) {
             throw ProfileNotFoundException(profileId = profileId)
         }
     }
 
-    private fun verifyAccount(accountId: Long) {
+    private fun validateAccount(accountId: Long) {
         if (!accountRepository.exists(accountId)) {
             throw AccountNotFoundException(accountId)
         }

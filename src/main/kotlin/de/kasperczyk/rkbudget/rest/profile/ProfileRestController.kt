@@ -1,5 +1,6 @@
 package de.kasperczyk.rkbudget.rest.profile
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import de.kasperczyk.rkbudget.rest.ServerError
 import de.kasperczyk.rkbudget.rest.profile.entity.EmailAddress
 import de.kasperczyk.rkbudget.rest.profile.entity.Profile
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/profiles")
-class ProfileRestController(val profileService: ProfileService) {
+class ProfileRestController(val profileService: ProfileService, val objectMapper: ObjectMapper) {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -39,7 +40,7 @@ class ProfileRestController(val profileService: ProfileService) {
     fun handleDuplicateEmailAddressException(duplicateEmailAddressException: DuplicateEmailAddressException): ServerError =
             ServerError(
                     errorMessage = duplicateEmailAddressException.message,
-                    requestParameters = mapOf("emailAddress" to duplicateEmailAddressException.emailAddress.fullAddress)
+                    requestBody = objectMapper.writeValueAsString(duplicateEmailAddressException.profile)
             )
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
@@ -56,7 +57,10 @@ class ProfileRestController(val profileService: ProfileService) {
                 } else {
                     mapOf(pair = "profileId" to profileId.toString())
                 }
-                ServerError(errorMessage = message, pathParameters = parameters)
+                ServerError(
+                        errorMessage = message,
+                        pathVariables = parameters
+                )
             }
 
     @ExceptionHandler(IdsDoNotMatchException::class)
@@ -65,8 +69,8 @@ class ProfileRestController(val profileService: ProfileService) {
             with(idsDoNotMatchException) {
                 ServerError(
                         errorMessage = idsDoNotMatchException.message,
-                        pathParameters = mapOf("profileId" to "$profileId"),
-                        requestParameters = mapOf("profile" to profile.toString())
+                        pathVariables = mapOf("profileId" to "$profileId"),
+                        requestBody = objectMapper.writeValueAsString(profile)
                 )
             }
 }

@@ -1,6 +1,6 @@
 package de.kasperczyk.rkbudget.rest.account
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import de.kasperczyk.rkbudget.rest.AbstractRestControllerTest
 import de.kasperczyk.rkbudget.rest.ServerError
 import de.kasperczyk.rkbudget.rest.account.entity.Account
 import de.kasperczyk.rkbudget.rest.account.entity.GiroAccount
@@ -11,30 +11,17 @@ import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.http.MediaType
-import org.springframework.test.context.junit4.SpringRunner
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 
-@RunWith(SpringRunner::class)
-@WebMvcTest(AccountRestController::class, secure = false)
-class AccountRestControllerTest {
+@WebMvcTest(AccountRestController::class)
+class AccountRestControllerTest : AbstractRestControllerTest() {
 
-    private val REQUEST_URL = "/profiles/${testProfile.id}/accounts"
-
-    @Autowired
-    private lateinit var mockMvc: MockMvc
-
-    @Autowired
-    private lateinit var objectMapper: ObjectMapper
+    override val REQUEST_URL = "/profiles/${testProfile.id}/accounts"
 
     @MockBean
     private lateinit var accountServiceMock: AccountService
@@ -49,13 +36,7 @@ class AccountRestControllerTest {
     @Test
     fun `POST for a new account creates it and returns the new account and status code 201 (created)`() {
         `when`(accountServiceMock.createAccount(profileId = testProfile.id, account = testAccount)).thenReturn(testAccount)
-        val jsonResult = mockMvc
-                .perform(post(REQUEST_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAccount))
-                .andExpect(status().isCreated)
-                .andReturn().response.contentAsString
-        val result = objectMapper.readValue(jsonResult, Account::class.java)
+        val result = performRequestForObject(doPostRequest(content = jsonAccount), status().isCreated, Account::class.java)
         verify(accountServiceMock).createAccount(profileId = testProfile.id, account = testAccount)
         assertThat(result as GiroAccount, `is`(testAccount))
     }
@@ -64,15 +45,13 @@ class AccountRestControllerTest {
     fun `POST for a non-existent profile returns status code 404 (not found) and a ServerError object`() {
         `when`(accountServiceMock.createAccount(testProfile.id, testAccount))
                 .thenThrow(ProfileNotFoundException(profileId = testProfile.id))
-        val jsonResult = mockMvc.perform(post(REQUEST_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonAccount))
-                .andExpect(status().isNotFound)
-                .andReturn().response.contentAsString
-        val result = objectMapper.readValue(jsonResult, ServerError::class.java)
+        val result = performRequestForObject(doPostRequest(content = jsonAccount), status().isNotFound, ServerError::class.java)
         verify(accountServiceMock).createAccount(profileId = testProfile.id, account = testAccount)
-        assertThat(result.errorMessage, `is`("Profile with id '${testProfile.id}' not found"))
-        assertThat(result.pathParameters!!["profileId"], `is`("${testProfile.id}"))
+        assertServerError(result,
+                expectedErrorMessage = "Profile with id '${testProfile.id}' not found",
+                expectedPathParameters = mapOf("profileId" to "${testProfile.id}"),
+                expectedRequestParameters = null,
+                expectedRequestBody = null)
     }
 
     @Test
