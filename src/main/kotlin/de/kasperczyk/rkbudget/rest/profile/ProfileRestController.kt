@@ -1,12 +1,12 @@
 package de.kasperczyk.rkbudget.rest.profile
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import de.kasperczyk.rkbudget.rest.ServerError
+import de.kasperczyk.rkbudget.rest.exception.DuplicateEmailAddressException
 import de.kasperczyk.rkbudget.rest.exception.IdsDoNotMatchException
+import de.kasperczyk.rkbudget.rest.exception.ProfileNotFoundException
+import de.kasperczyk.rkbudget.rest.exception.ServerError
 import de.kasperczyk.rkbudget.rest.profile.entity.EmailAddress
 import de.kasperczyk.rkbudget.rest.profile.entity.Profile
-import de.kasperczyk.rkbudget.rest.profile.exception.DuplicateEmailAddressException
-import de.kasperczyk.rkbudget.rest.profile.exception.ProfileNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.annotation.*

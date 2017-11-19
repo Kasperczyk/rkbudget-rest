@@ -3,6 +3,7 @@ package de.kasperczyk.rkbudget.rest
 import de.kasperczyk.rkbudget.rest.account.entity.GiroAccount
 import de.kasperczyk.rkbudget.rest.profile.entity.EmailAddress
 import de.kasperczyk.rkbudget.rest.profile.entity.Profile
+import de.kasperczyk.rkbudget.rest.tag.entity.Tag
 import java.time.LocalDate
 
 val testEmailAddress = EmailAddress(fullAddress = "kasperczyk.rene@gmail.com")
@@ -20,4 +21,9 @@ val testAccount = GiroAccount(
         expirationDate = LocalDate.of(2022, 12, 31),
         institute = "Some bank",
         iban = "DE 12345678 1234567890 12"
+)
+
+val testTag = Tag(
+        name = "Food",
+        profile = testProfile
 )

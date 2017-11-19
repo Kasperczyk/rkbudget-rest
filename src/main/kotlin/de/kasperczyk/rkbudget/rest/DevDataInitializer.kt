@@ -5,6 +5,8 @@ import de.kasperczyk.rkbudget.rest.account.entity.*
 import de.kasperczyk.rkbudget.rest.profile.ProfileService
 import de.kasperczyk.rkbudget.rest.profile.entity.EmailAddress
 import de.kasperczyk.rkbudget.rest.profile.entity.Profile
+import de.kasperczyk.rkbudget.rest.tag.TagService
+import de.kasperczyk.rkbudget.rest.tag.entity.Tag
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
@@ -13,7 +15,8 @@ import java.time.LocalDate
 @Component
 @org.springframework.context.annotation.Profile("dev")
 class DevDataInitializer(val profileService: ProfileService,
-                         val accountService: AccountService) : ApplicationRunner {
+                         val accountService: AccountService,
+                         val tagService: TagService) : ApplicationRunner {
 
     override fun run(args: ApplicationArguments?) {
         val profiles = listOf(
@@ -23,8 +26,10 @@ class DevDataInitializer(val profileService: ProfileService,
                         emailAddress = EmailAddress(fullAddress = "kasperczyk.rene@gmail.com"),
                         password = "secret"
                 ),
-                Profile(firstName = "Christina", lastName = "Kasperczyk", password = "secret",
-                        emailAddress = EmailAddress(fullAddress = "christina.kasperczyk@web.de")
+                Profile(firstName = "Christina",
+                        lastName = "Kasperczyk",
+                        emailAddress = EmailAddress(fullAddress = "christina.kasperczyk@web.de"),
+                        password = "secret"
                 )
         )
         profiles.forEach { profileService.createProfile(it) }
@@ -60,7 +65,23 @@ class DevDataInitializer(val profileService: ProfileService,
                         profile = profiles[0]
                 )
         )
-        accounts.forEach { accountService.createAccount(profiles.get(0).id, it) }
+        accounts.forEach { accountService.createAccount(profiles[0].id, it) }
+
+        val tags = listOf(
+                Tag(
+                        name = "Food",
+                        profile = profiles[0]
+                ),
+                Tag(
+                        name = "Fitness",
+                        profile = profiles[0]
+                ),
+                Tag(
+                        name = "Clothes",
+                        profile = profiles[0]
+                )
+        )
+        tags.forEach { tagService.createTag(profiles[0].id, it) }
 
         println("\n>>> Development test data initialization complete\n")
     }

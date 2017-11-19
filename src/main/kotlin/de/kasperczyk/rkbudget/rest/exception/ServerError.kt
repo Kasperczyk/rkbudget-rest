@@ -1,4 +1,4 @@
-package de.kasperczyk.rkbudget.rest
+package de.kasperczyk.rkbudget.rest.exception
 
 import java.time.LocalDateTime
 

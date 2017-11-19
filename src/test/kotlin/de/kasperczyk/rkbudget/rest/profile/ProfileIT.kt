@@ -6,15 +6,10 @@ import de.kasperczyk.rkbudget.rest.profile.entity.Profile
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.web.client.TestRestTemplate
 
 class ProfileIT : AbstractTransactionalIT() {
 
-    private val REQUEST_URL = "/profiles"
-
-    @Autowired
-    private lateinit var restTemplate: TestRestTemplate
+    override val REQUEST_URL = "/profiles"
 
     @Test
     fun `creating a new profile saves it to the database and returns it`() {

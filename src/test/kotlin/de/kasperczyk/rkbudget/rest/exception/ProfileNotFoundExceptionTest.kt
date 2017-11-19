@@ -1,4 +1,4 @@
-package de.kasperczyk.rkbudget.rest.profile.exception
+package de.kasperczyk.rkbudget.rest.exception
 
 import de.kasperczyk.rkbudget.rest.testEmailAddress
 import de.kasperczyk.rkbudget.rest.testProfile

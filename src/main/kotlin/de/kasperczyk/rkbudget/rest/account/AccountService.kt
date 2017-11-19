@@ -4,9 +4,9 @@ import de.kasperczyk.rkbudget.rest.account.entity.Account
 import de.kasperczyk.rkbudget.rest.account.entity.BankAccount
 import de.kasperczyk.rkbudget.rest.account.entity.CreditAccount
 import de.kasperczyk.rkbudget.rest.account.entity.ExpirableAccount
-import de.kasperczyk.rkbudget.rest.account.exception.AccountNotFoundException
+import de.kasperczyk.rkbudget.rest.exception.AccountNotFoundException
+import de.kasperczyk.rkbudget.rest.exception.ProfileNotFoundException
 import de.kasperczyk.rkbudget.rest.profile.ProfileService
-import de.kasperczyk.rkbudget.rest.profile.exception.ProfileNotFoundException
 import org.springframework.stereotype.Service
 
 @Service

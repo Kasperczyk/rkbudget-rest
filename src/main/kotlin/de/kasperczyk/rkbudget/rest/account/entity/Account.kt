@@ -25,6 +25,7 @@ abstract class Account(
         @JoinColumn(name = "profile_id")
         var profile: Profile = Profile(),
 
+        @Column
         val accountType: AccountType
 ) {
     override fun equals(other: Any?): Boolean {

@@ -1,6 +1,7 @@
 package de.kasperczyk.rkbudget.rest
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import de.kasperczyk.rkbudget.rest.exception.ServerError
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.runner.RunWith

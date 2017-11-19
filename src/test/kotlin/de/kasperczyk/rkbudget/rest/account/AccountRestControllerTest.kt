@@ -3,8 +3,8 @@ package de.kasperczyk.rkbudget.rest.account
 import de.kasperczyk.rkbudget.rest.AbstractRestControllerTest
 import de.kasperczyk.rkbudget.rest.account.entity.Account
 import de.kasperczyk.rkbudget.rest.account.entity.GiroAccount
-import de.kasperczyk.rkbudget.rest.account.exception.AccountNotFoundException
-import de.kasperczyk.rkbudget.rest.profile.exception.ProfileNotFoundException
+import de.kasperczyk.rkbudget.rest.exception.AccountNotFoundException
+import de.kasperczyk.rkbudget.rest.exception.ProfileNotFoundException
 import de.kasperczyk.rkbudget.rest.testAccount
 import de.kasperczyk.rkbudget.rest.testProfile
 import junit.framework.Assert.assertEquals
