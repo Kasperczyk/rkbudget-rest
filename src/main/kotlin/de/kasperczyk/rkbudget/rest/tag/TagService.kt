@@ -8,5 +8,16 @@ import org.springframework.stereotype.Service
 class TagService(val tagRepository: TagRepository,
                  val profileService: ProfileService) {
 
-    fun createTag(profileId: Long, tag: Tag) = tagRepository.save(tag)
+    fun createTag(profileId: Long, tag: Tag): Tag = tagRepository.save(tag)
+
+    fun getAllTagsForProfile(profileId: Long): List<Tag> =
+            listOf(Tag())
+
+    fun updateTag(profileId: Long, updatedTag: Tag) {
+
+    }
+
+    fun deleteTag(profileId: Long, tagId: Long) {
+
+    }
 }

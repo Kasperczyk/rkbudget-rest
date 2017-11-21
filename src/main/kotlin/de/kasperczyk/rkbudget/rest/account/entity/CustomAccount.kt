@@ -10,7 +10,7 @@ import javax.persistence.Entity
 @DiscriminatorValue(CUSTOM_ACCOUNT)
 class CustomAccount(name: String = "",
                     profile: Profile = Profile(),
-                    @Column val expirationDate: LocalDate? = null
+                    @Column var expirationDate: LocalDate? = null
 ) : Account(name = name, profile = profile, accountType = AccountType.CUSTOM) {
 
     override fun equals(other: Any?): Boolean {

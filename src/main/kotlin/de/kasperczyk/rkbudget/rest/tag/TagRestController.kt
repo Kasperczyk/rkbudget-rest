@@ -1,17 +1,29 @@
 package de.kasperczyk.rkbudget.rest.tag
 
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import de.kasperczyk.rkbudget.rest.AbstractRestController
+import de.kasperczyk.rkbudget.rest.tag.entity.Tag
+import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("profiles/{profileId}/tags")
-class TagRestController(val tagService: TagService) {
+class TagRestController(val tagService: TagService) : AbstractRestController(Tag::class) {
 
-    // post
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    fun createTag(@PathVariable profileId: Long, @RequestBody tag: Tag): Tag = tagService.createTag(profileId, tag)
 
-    // get
+    @GetMapping
+    fun getAllTags(@PathVariable profileId: Long): List<Tag> = tagService.getAllTagsForProfile(profileId)
 
-    // update
+    @PutMapping("/{tagId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updateTag(@PathVariable profileId: Long, @PathVariable tagId: Long, @RequestBody updatedTag: Tag) {
+        validateIds(profileId, tagId, updatedTag.profile.id, updatedTag.id, "tagId")
+        tagService.updateTag(profileId, updatedTag)
+    }
 
-    // delete
+    @DeleteMapping("/{tagId}")
+    fun deleteTag(@PathVariable profileId: Long, @PathVariable tagId: Long) =
+            tagService.deleteTag(profileId, tagId)
 }

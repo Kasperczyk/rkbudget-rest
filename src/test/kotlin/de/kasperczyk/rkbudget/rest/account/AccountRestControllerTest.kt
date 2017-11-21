@@ -3,7 +3,7 @@ package de.kasperczyk.rkbudget.rest.account
 import de.kasperczyk.rkbudget.rest.AbstractRestControllerTest
 import de.kasperczyk.rkbudget.rest.account.entity.Account
 import de.kasperczyk.rkbudget.rest.account.entity.GiroAccount
-import de.kasperczyk.rkbudget.rest.exception.AccountNotFoundException
+import de.kasperczyk.rkbudget.rest.exception.EntityNotFoundException
 import de.kasperczyk.rkbudget.rest.exception.ProfileNotFoundException
 import de.kasperczyk.rkbudget.rest.testAccount
 import de.kasperczyk.rkbudget.rest.testProfile
@@ -61,6 +61,15 @@ class AccountRestControllerTest : AbstractRestControllerTest() {
     }
 
     @Test
+    fun `GET for an available profile returns status code 200 (ok) and all accounts of that profile`() {
+        val accountList = listOf(testAccount, testAccount)
+        `when`(accountServiceMock.getAllAccountsForProfile(testProfile.id)).thenReturn(accountList)
+        val result: List<Account> = listOf(*performRequestForObject(doGetRequest(), status().isOk, Array<Account>::class.java))
+        assertEquals(result, accountList)
+        verify(accountServiceMock).getAllAccountsForProfile(testProfile.id)
+    }
+
+    @Test
     fun `GET for a non-existent profile returns status code 404 (not found) and a ServerError object`() {
         `when`(accountServiceMock.getAllAccountsForProfile(testProfile.id))
                 .thenThrow(ProfileNotFoundException(profileId = testProfile.id))
@@ -72,12 +81,10 @@ class AccountRestControllerTest : AbstractRestControllerTest() {
     }
 
     @Test
-    fun `GET for an available profile returns status code 200 (ok) and all accounts of that profile`() {
-        val accountList = listOf(testAccount, testAccount)
-        `when`(accountServiceMock.getAllAccountsForProfile(testProfile.id)).thenReturn(accountList)
-        val result: List<Account> = listOf(*performRequestForObject(doGetRequest(), status().isOk, Array<Account>::class.java))
-        assertEquals(result, accountList)
-        verify(accountServiceMock).getAllAccountsForProfile(testProfile.id)
+    fun `PUT on an existing account updates it and returns status code 204 (no content)`() {
+        performRequest(doPutRequest(
+                requestUrl = REQUEST_URL + "/${testAccount.id}", content = jsonAccount), status().isNoContent)
+        verify(accountServiceMock).updateAccount(testAccount.id, testAccount)
     }
 
     @Test
@@ -95,7 +102,7 @@ class AccountRestControllerTest : AbstractRestControllerTest() {
     @Test
     fun `PUT on a non-existent account returns status code 404 (not found) and a ServerError object`() {
         `when`(accountServiceMock.updateAccount(testAccount.id, testAccount))
-                .thenThrow(AccountNotFoundException(testAccount.id))
+                .thenThrow(EntityNotFoundException(testAccount.id, "accountId"))
         val result = performRequestForServerError(doPutRequest(
                 requestUrl = REQUEST_URL + "/${testAccount.id}", content = jsonAccount), status().isNotFound)
         assertServerError(result,
@@ -125,10 +132,9 @@ class AccountRestControllerTest : AbstractRestControllerTest() {
     }
 
     @Test
-    fun `PUT on an existing account updates it and returns status code 204 (no content)`() {
-        performRequest(doPutRequest(
-                requestUrl = REQUEST_URL + "/${testAccount.id}", content = jsonAccount), status().isNoContent)
-        verify(accountServiceMock).updateAccount(testAccount.id, testAccount)
+    fun `DELETE on an existing account deletes it and returns status code 200 (ok)`() {
+        performRequest(doDeleteRequest(requestUrl = REQUEST_URL + "/${testAccount.id}"), status().isOk)
+        verify(accountServiceMock).deleteAccount(testProfile.id, testAccount.id)
     }
 
     @Test
@@ -146,18 +152,12 @@ class AccountRestControllerTest : AbstractRestControllerTest() {
     @Test
     fun `DELETE on a non-existent account returns status code 404 (not found) and a ServerError object`() {
         `when`(accountServiceMock.deleteAccount(testProfile.id, testAccount.id - 1))
-                .thenThrow(AccountNotFoundException(testAccount.id - 1))
+                .thenThrow(EntityNotFoundException(testAccount.id - 1, "accountId"))
         val result = performRequestForServerError(doDeleteRequest(
                 requestUrl = REQUEST_URL + "/${testAccount.id - 1}"), status().isNotFound)
         assertServerError(result,
                 expectedErrorMessage = "Account with id '${testAccount.id - 1}' not found",
                 expectedPathParameters = mapOf("accountId" to "${testAccount.id - 1}"))
         verify(accountServiceMock).deleteAccount(testProfile.id, testAccount.id - 1)
-    }
-
-    @Test
-    fun `DELETE on an existing account deletes it and returns status code 200 (ok)`() {
-        performRequest(doDeleteRequest(requestUrl = REQUEST_URL + "/${testAccount.id}"), status().isOk)
-        verify(accountServiceMock).deleteAccount(testProfile.id, testAccount.id)
     }
 }

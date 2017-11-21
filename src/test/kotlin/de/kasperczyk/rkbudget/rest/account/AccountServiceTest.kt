@@ -2,7 +2,8 @@ package de.kasperczyk.rkbudget.rest.account
 
 import de.kasperczyk.rkbudget.rest.account.entity.Account
 import de.kasperczyk.rkbudget.rest.account.entity.GiroAccount
-import de.kasperczyk.rkbudget.rest.exception.AccountNotFoundException
+import de.kasperczyk.rkbudget.rest.account.entity.SavingsAccount
+import de.kasperczyk.rkbudget.rest.exception.EntityNotFoundException
 import de.kasperczyk.rkbudget.rest.exception.ProfileNotFoundException
 import de.kasperczyk.rkbudget.rest.profile.ProfileService
 import de.kasperczyk.rkbudget.rest.testAccount
@@ -83,6 +84,28 @@ class AccountServiceTest {
     }
 
     @Test
+    fun `trying to update an account's account type throws an IlleagelStateException`() {
+        val updatedAccount = SavingsAccount(
+                name = "Other Giro Account",
+                institute = "Other Bank",
+                iban = "some iban",
+                expirationDate = LocalDate.of(2030, 10, 30),
+                profile = testProfile
+        )
+        assertThat(updatedAccount.accountType, `is`(not(testAccount.accountType)))
+        `when`(profileServiceMock.exists(updatedAccount.profile.id)).thenReturn(true)
+        `when`(accountRepositoryMock.exists(updatedAccount.id)).thenReturn(true)
+        `when`(accountRepositoryMock.findOne(updatedAccount.id)).thenReturn(testAccount)
+        expectedException.expect(IllegalStateException::class.java)
+        expectedException.expectMessage("Account types differ, but need to be equal. The account in the database is " +
+                "of type ${testAccount.accountType}; the new type is ${updatedAccount.accountType}")
+        accountService.updateAccount(updatedAccount.id, updatedAccount)
+        verify(profileServiceMock).exists(updatedAccount.profile.id)
+        verify(accountRepositoryMock).findOne(updatedAccount.id)
+        verify(accountRepositoryMock, never()).save(testAccount)
+    }
+
+    @Test
     fun `updating an existing account updates that account in the database`() {
         val updatedAccount = GiroAccount(
                 name = "Other Giro Account",
@@ -102,10 +125,10 @@ class AccountServiceTest {
     }
 
     @Test
-    fun `trying to update a non-existent account throws an AccountNotFoundException`() {
+    fun `trying to update a non-existent account throws an EntityNotFoundException`() {
         `when`(profileServiceMock.exists(testProfile.id)).thenReturn(true)
         `when`(accountRepositoryMock.exists(-1)).thenReturn(false)
-        expectedException.expect(AccountNotFoundException::class.java)
+        expectedException.expect(EntityNotFoundException::class.java)
         expectedException.expectMessage("Account with id '-1' not found")
         accountService.updateAccount(-1, testAccount)
         verify(profileServiceMock).exists(testProfile.id)
@@ -135,10 +158,10 @@ class AccountServiceTest {
     }
 
     @Test
-    fun `trying to delete a non-existent account throws an AccountNotFoundException`() {
+    fun `trying to delete a non-existent account throws an EntityNotFoundException`() {
         `when`(profileServiceMock.exists(testProfile.id)).thenReturn(true)
         `when`(accountRepositoryMock.exists(-1)).thenReturn(false)
-        expectedException.expect(AccountNotFoundException::class.java)
+        expectedException.expect(EntityNotFoundException::class.java)
         expectedException.expectMessage("Account with id '${testAccount.id}' not found")
         accountService.deleteAccount(testProfile.id, testAccount.id)
         verify(profileServiceMock).exists(testProfile.id)

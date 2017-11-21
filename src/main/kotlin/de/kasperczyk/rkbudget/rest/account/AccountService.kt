@@ -1,10 +1,7 @@
 package de.kasperczyk.rkbudget.rest.account
 
-import de.kasperczyk.rkbudget.rest.account.entity.Account
-import de.kasperczyk.rkbudget.rest.account.entity.BankAccount
-import de.kasperczyk.rkbudget.rest.account.entity.CreditAccount
-import de.kasperczyk.rkbudget.rest.account.entity.ExpirableAccount
-import de.kasperczyk.rkbudget.rest.exception.AccountNotFoundException
+import de.kasperczyk.rkbudget.rest.account.entity.*
+import de.kasperczyk.rkbudget.rest.exception.EntityNotFoundException
 import de.kasperczyk.rkbudget.rest.exception.ProfileNotFoundException
 import de.kasperczyk.rkbudget.rest.profile.ProfileService
 import org.springframework.stereotype.Service
@@ -25,29 +22,42 @@ class AccountService(val accountRepository: AccountRepository,
     }
 
     fun updateAccount(accountId: Long, updatedAccount: Account) {
+
+        fun validateAccountType(account: Account, updatedAccount: Account) {
+            if (account.accountType != updatedAccount.accountType) {
+                throw IllegalStateException("Account types differ, but need to be equal. The account in the database is " +
+                        "of type ${account.accountType}; the new type is ${updatedAccount.accountType}")
+            }
+        }
+
         validateProfile(updatedAccount.profile.id)
         validateAccount(accountId)
         val account = accountRepository.findOne(accountId)
-        account.apply {
-            when (account) {
-                is ExpirableAccount -> {
-                    updatedAccount as ExpirableAccount
-                    account.expirationDate = updatedAccount.expirationDate
-                }
-                is BankAccount -> {
-                    updatedAccount as BankAccount
-                    account.institute = updatedAccount.institute
-                    account.iban = updatedAccount.iban
-                }
-                is CreditAccount -> {
-                    updatedAccount as CreditAccount
-                    account.issuer = updatedAccount.issuer
-                    account.creditCardNumber = updatedAccount.creditCardNumber
+        validateAccountType(account, updatedAccount)
+        when (account) {
+            is CustomAccount -> {
+                updatedAccount as CustomAccount
+                account.expirationDate = updatedAccount.expirationDate
+            }
+            is ExpirableAccount -> {
+                updatedAccount as ExpirableAccount
+                account.expirationDate = updatedAccount.expirationDate
+                when (account) {
+                    is BankAccount -> {
+                        updatedAccount as BankAccount
+                        account.institute = updatedAccount.institute
+                        account.iban = updatedAccount.iban
+                    }
+                    is CreditAccount -> {
+                        updatedAccount as CreditAccount
+                        account.issuer = updatedAccount.issuer
+                        account.creditCardNumber = updatedAccount.creditCardNumber
+                    }
                 }
             }
-            name = updatedAccount.name
-            profile = updatedAccount.profile
         }
+        account.name = updatedAccount.name
+        account.profile = updatedAccount.profile
         accountRepository.save(account)
     }
 
@@ -65,7 +75,7 @@ class AccountService(val accountRepository: AccountRepository,
 
     private fun validateAccount(accountId: Long) {
         if (!accountRepository.exists(accountId)) {
-            throw AccountNotFoundException(accountId)
+            throw EntityNotFoundException(accountId, "accountId")
         }
     }
 }
