@@ -15,5 +15,5 @@ data class Tag(
 
         @ManyToOne
         @JoinColumn(name = "profile_id")
-        val profile: Profile = Profile()
+        var profile: Profile = Profile()
 )

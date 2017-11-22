@@ -1,14 +1,13 @@
 package de.kasperczyk.rkbudget.rest.account
 
+import de.kasperczyk.rkbudget.rest.AbstractService
 import de.kasperczyk.rkbudget.rest.account.entity.*
-import de.kasperczyk.rkbudget.rest.exception.EntityNotFoundException
-import de.kasperczyk.rkbudget.rest.exception.ProfileNotFoundException
 import de.kasperczyk.rkbudget.rest.profile.ProfileService
 import org.springframework.stereotype.Service
 
 @Service
 class AccountService(val accountRepository: AccountRepository,
-                     val profileService: ProfileService) {
+                     profileService: ProfileService) : AbstractService(profileService) {
 
     fun createAccount(profileId: Long, account: Account): Account {
         val profile = profileService.getProfileById(profileId)
@@ -30,52 +29,44 @@ class AccountService(val accountRepository: AccountRepository,
             }
         }
 
-        validateProfile(updatedAccount.profile.id)
-        validateAccount(accountId)
-        val account = accountRepository.findOne(accountId)
-        validateAccountType(account, updatedAccount)
-        when (account) {
-            is CustomAccount -> {
-                updatedAccount as CustomAccount
-                account.expirationDate = updatedAccount.expirationDate
-            }
-            is ExpirableAccount -> {
-                updatedAccount as ExpirableAccount
-                account.expirationDate = updatedAccount.expirationDate
-                when (account) {
-                    is BankAccount -> {
-                        updatedAccount as BankAccount
-                        account.institute = updatedAccount.institute
-                        account.iban = updatedAccount.iban
-                    }
-                    is CreditAccount -> {
-                        updatedAccount as CreditAccount
-                        account.issuer = updatedAccount.issuer
-                        account.creditCardNumber = updatedAccount.creditCardNumber
+        fun updateFields(account: Account, updatedAccount: Account) {
+            when (account) {
+                is CustomAccount -> {
+                    updatedAccount as CustomAccount
+                    account.expirationDate = updatedAccount.expirationDate
+                }
+                is ExpirableAccount -> {
+                    updatedAccount as ExpirableAccount
+                    account.expirationDate = updatedAccount.expirationDate
+                    when (account) {
+                        is BankAccount -> {
+                            updatedAccount as BankAccount
+                            account.institute = updatedAccount.institute
+                            account.iban = updatedAccount.iban
+                        }
+                        is CreditAccount -> {
+                            updatedAccount as CreditAccount
+                            account.issuer = updatedAccount.issuer
+                            account.creditCardNumber = updatedAccount.creditCardNumber
+                        }
                     }
                 }
             }
+            account.name = updatedAccount.name
+            account.profile = updatedAccount.profile
         }
-        account.name = updatedAccount.name
-        account.profile = updatedAccount.profile
+
+        validateProfile(updatedAccount.profile.id)
+        validateEntity(accountRepository, accountId, "accountId")
+        val account = accountRepository.findOne(accountId)
+        validateAccountType(account, updatedAccount)
+        updateFields(account, updatedAccount)
         accountRepository.save(account)
     }
 
     fun deleteAccount(profileId: Long, accountId: Long) {
         validateProfile(profileId)
-        validateAccount(accountId)
+        validateEntity(accountRepository, accountId, "accountId")
         accountRepository.delete(accountId)
-    }
-
-    private fun validateProfile(profileId: Long) {
-        if (!profileService.exists(profileId)) {
-            throw ProfileNotFoundException(profileId = profileId)
-        }
-    }
-
-    private fun validateAccount(accountId: Long) {
-        if (!accountRepository.exists(accountId)) {
-            throw EntityNotFoundException(accountId, "accountId")
-        }
     }
 }

@@ -1,8 +1,5 @@
-package de.kasperczyk.rkbudget.rest.transaction
+package de.kasperczyk.rkbudget.rest.transaction.entity
 
-import de.kasperczyk.rkbudget.rest.transaction.entity.EXPENSE_TRANSACTION
-import de.kasperczyk.rkbudget.rest.transaction.entity.INCOME_TRANSACTION
-import de.kasperczyk.rkbudget.rest.transaction.entity.TransactionType
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Test

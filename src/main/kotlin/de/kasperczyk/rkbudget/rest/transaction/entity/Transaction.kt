@@ -1,6 +1,7 @@
 package de.kasperczyk.rkbudget.rest.transaction.entity
 
 import de.kasperczyk.rkbudget.rest.profile.entity.Profile
+import de.kasperczyk.rkbudget.rest.sharer.entity.Sharer
 import de.kasperczyk.rkbudget.rest.tag.entity.Tag
 import org.javamoney.moneta.Money
 import java.time.LocalDate
@@ -36,7 +37,7 @@ abstract class Transaction(
                 name = "shared_with",
                 joinColumns = arrayOf(JoinColumn(name = "transaction_id"))
         )
-        val sharedWith: Set<Profile> = emptySet(),
+        val sharedWith: Set<Sharer> = emptySet(),
 
         @ManyToOne
         @JoinColumn(name = "profile_id")

@@ -32,5 +32,8 @@ data class Profile(
         val creationDate: LocalDate = LocalDate.now(),
 
         @Column
-        var lastLoginTimestamp: LocalDateTime? = null
+        var lastLoginTimestamp: LocalDateTime? = null,
+
+        @Column
+        var isSharingProfile: Boolean = false
 )

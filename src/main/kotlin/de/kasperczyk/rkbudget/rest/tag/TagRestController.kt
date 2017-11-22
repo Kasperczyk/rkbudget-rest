@@ -14,7 +14,7 @@ class TagRestController(val tagService: TagService) : AbstractRestController(Tag
     fun createTag(@PathVariable profileId: Long, @RequestBody tag: Tag): Tag = tagService.createTag(profileId, tag)
 
     @GetMapping
-    fun getAllTags(@PathVariable profileId: Long): List<Tag> = tagService.getAllTagsForProfile(profileId)
+    fun getAllTags(@PathVariable profileId: Long): Set<Tag> = tagService.getAllTagsForProfile(profileId)
 
     @PutMapping("/{tagId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

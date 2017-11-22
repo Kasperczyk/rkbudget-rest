@@ -60,10 +60,10 @@ class TagRestControllerTest : AbstractRestControllerTest() {
 
     @Test
     fun `GET for an available profile returns status code 200 (ok)  and all tags of that profile`() {
-        val tagList = listOf(testTag, testTag)
-        `when`(tagServiceMock.getAllTagsForProfile(testProfile.id)).thenReturn(tagList)
-        val result: List<Tag> = listOf(*performRequestForObject(doGetRequest(), status().isOk, Array<Tag>::class.java))
-        assertEquals(result, tagList)
+        val tagSet = setOf(testTag, testTag)
+        `when`(tagServiceMock.getAllTagsForProfile(testProfile.id)).thenReturn(tagSet)
+        val result: Set<Tag> = setOf(*performRequestForObject(doGetRequest(), status().isOk, Array<Tag>::class.java))
+        assertEquals(result, tagSet)
         verify(tagServiceMock).getAllTagsForProfile(testProfile.id)
     }
 

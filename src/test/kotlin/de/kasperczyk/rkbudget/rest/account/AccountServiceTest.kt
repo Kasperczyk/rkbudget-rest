@@ -54,8 +54,7 @@ class AccountServiceTest {
 
     @Test
     fun `trying to create an account for a non-existent profile throws a ProfileNotFoundException`() {
-        `when`(profileServiceMock.getProfileById(testProfile.id))
-                .thenThrow(ProfileNotFoundException(profileId = testProfile.id))
+        `when`(profileServiceMock.getProfileById(testProfile.id)).thenThrow(ProfileNotFoundException(profileId = testProfile.id))
         expectedException.expect(ProfileNotFoundException::class.java)
         expectedException.expectMessage("Profile with id '${testProfile.id}' not found")
         accountService.createAccount(testProfile.id, testAccount)
@@ -74,7 +73,7 @@ class AccountServiceTest {
     }
 
     @Test
-    fun `trying to load all accounts from a non-existent profile throws a ProfileNotFoundException`() {
+    fun `trying to get all accounts for a non-existent profile throws a ProfileNotFoundException`() {
         `when`(profileServiceMock.exists(testProfile.id)).thenReturn(false)
         expectedException.expect(ProfileNotFoundException::class.java)
         expectedException.expectMessage("Profile with id '${testProfile.id}' not found")
