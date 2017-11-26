@@ -1,4 +1,4 @@
-package de.kasperczyk.rkbudget.rest.transaction.entity
+package de.kasperczyk.rkbudget.rest.variableTransaction.entity
 
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.MatcherAssert.assertThat

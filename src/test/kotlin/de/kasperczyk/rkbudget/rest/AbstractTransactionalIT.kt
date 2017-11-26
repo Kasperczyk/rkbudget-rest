@@ -1,5 +1,6 @@
 package de.kasperczyk.rkbudget.rest
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -12,10 +13,13 @@ import org.springframework.transaction.annotation.Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration")
 @Transactional
-abstract class AbstractTransactionalIT {
+abstract class AbstractTransactionalIT() {
 
     abstract val REQUEST_URL: String
 
     @Autowired
     protected lateinit var restTemplate: TestRestTemplate
+
+    @Autowired
+    protected lateinit var objectMapper: ObjectMapper
 }

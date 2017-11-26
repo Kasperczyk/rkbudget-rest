@@ -1,24 +1,32 @@
 package de.kasperczyk.rkbudget.rest.sharer.entity
 
 import de.kasperczyk.rkbudget.rest.profile.entity.EmailAddress
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import de.kasperczyk.rkbudget.rest.profile.entity.Profile
+import javax.persistence.*
 
 @Entity
+@Table(name = "SHARER")
 data class Sharer(
 
         @Id
         @GeneratedValue
+        @Column(name = "SHARER_ID")
         val id: Long = 0,
 
-        @Column
+        @Version
+        @Column(name = "VERSION")
+        private val version: Long = 0,
+
+        @Column(name = "FIRST_NAME")
         var firstName: String = "",
 
-        @Column
+        @Column(name = "LAST_NAME")
         var lastName: String = "",
 
-        @Column
-        var emailAddress: EmailAddress = EmailAddress()
+        @Column(name = "EMAIL_ADDRESS")
+        var emailAddress: EmailAddress = EmailAddress(),
+
+        @ManyToOne
+        @JoinColumn(name = "PROFILE_ID")
+        val profile: Profile = Profile()
 )

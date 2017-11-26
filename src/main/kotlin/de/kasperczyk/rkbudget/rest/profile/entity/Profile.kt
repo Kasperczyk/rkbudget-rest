@@ -1,39 +1,37 @@
 package de.kasperczyk.rkbudget.rest.profile.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import java.time.LocalDate
 import java.time.LocalDateTime
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import javax.persistence.*
 
 @Entity
-@JsonIgnoreProperties(ignoreUnknown = true) // todo why do I need this?
+@Table(name = "PROFILE")
 data class Profile(
 
         @Id
         @GeneratedValue
+        @Column(name = "PROFILE_ID")
         val id: Long = 0,
 
-        @Column
+        @Version
+        @Column(name = "VERSION")
+        private val version: Long = 0,
+
+        @Column(name = "FIRST_NAME")
         var firstName: String = "",
 
-        @Column
+        @Column(name = "LAST_NAME")
         var lastName: String = "",
 
-        @Column(unique = true)
+        @Column(name = "EMAIL_ADDRESS", unique = true)
         var emailAddress: EmailAddress = EmailAddress(),
 
-        @Column
+        @Column(name = "PASSWORD")
         var password: String = "",
 
-        @Column
+        @Column(name = "DATE_CREATED")
         val creationDate: LocalDate = LocalDate.now(),
 
-        @Column
-        var lastLoginTimestamp: LocalDateTime? = null,
-
-        @Column
-        var isSharingProfile: Boolean = false
+        @Column(name = "LAST_LOGIN_TIMESTAMP")
+        var lastLoginTimestamp: LocalDateTime? = null
 )

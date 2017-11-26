@@ -9,7 +9,7 @@ import javax.persistence.Entity
 abstract class ExpirableAccount(
         name: String,
         profile: Profile,
-        @Column var expirationDate: LocalDate,
+        @Column(name = "EXPIRATION_DATE") var expirationDate: LocalDate,
         accountType: AccountType
 ) : Account(name = name, profile = profile, accountType = accountType) {
 

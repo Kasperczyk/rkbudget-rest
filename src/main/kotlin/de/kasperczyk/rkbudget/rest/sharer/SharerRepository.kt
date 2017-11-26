@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface SharerRepository : CrudRepository<Sharer, Long> {
 
-
+    fun findAllByProfileId(profileId: Long): List<Sharer>
 }

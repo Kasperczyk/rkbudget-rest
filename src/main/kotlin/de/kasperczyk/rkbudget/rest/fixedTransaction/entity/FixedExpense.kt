@@ -1,4 +1,9 @@
 package de.kasperczyk.rkbudget.rest.fixedTransaction.entity
 
-class FixedExpense {
+import javax.persistence.Entity
+import javax.persistence.Table
+
+@Entity
+@Table(name = "FIXED_EXPENSE")
+class FixedExpense : FixedTransaction() {
 }

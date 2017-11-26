@@ -1,4 +1,4 @@
-package de.kasperczyk.rkbudget.rest.transaction
+package de.kasperczyk.rkbudget.rest.variableTransaction
 
 import de.kasperczyk.rkbudget.rest.AbstractTransactionalIT
 import de.kasperczyk.rkbudget.rest.testProfile

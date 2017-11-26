@@ -10,8 +10,8 @@ abstract class BankAccount(
         name: String,
         profile: Profile,
         expirationDate: LocalDate,
-        @Column var institute: String,
-        @Column var iban: String,
+        @Column(name = "INSTITUTE") var institute: String,
+        @Column(name = "IBAN") var iban: String,
         accountType: AccountType
 ) : ExpirableAccount(name, profile, expirationDate, accountType) {
 

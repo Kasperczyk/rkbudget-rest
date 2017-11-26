@@ -5,6 +5,7 @@ import de.kasperczyk.rkbudget.rest.profile.entity.Profile
 import javax.persistence.*
 
 @Entity
+@Table(name = "ACCOUNT")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TYPE")
 @JsonTypeInfo(
@@ -16,16 +17,21 @@ abstract class Account(
 
         @Id
         @GeneratedValue
+        @Column(name = "ACCOUNT_ID")
         val id: Long = 0,
 
-        @Column
+        @Version
+        @Column(name = "VERSION")
+        private val version: Long = 0,
+
+        @Column(name = "NAME")
         var name: String = "",
 
         @ManyToOne
-        @JoinColumn(name = "profile_id")
+        @JoinColumn(name = "PROFILE_ID")
         var profile: Profile = Profile(),
 
-        @Column
+        @Column(name = "ACCOUNT_TYPE")
         val accountType: AccountType
 ) {
     override fun equals(other: Any?): Boolean {

@@ -21,7 +21,7 @@ abstract class AbstractRestController(private val resourceType: KClass<*>) {
             pathProfileId != entityProfileId ->
                 throw IdsDoNotMatchException(pathProfileId, "profileId", entityProfileId)
             pathEntityId != entityId ->
-                throw IdsDoNotMatchException(pathEntityId, "$key", entityId)
+                throw IdsDoNotMatchException(pathEntityId, key, entityId)
             else -> return
         }
     }

@@ -1,4 +1,4 @@
-package de.kasperczyk.rkbudget.rest.transaction
+package de.kasperczyk.rkbudget.rest.variableTransaction
 
 import de.kasperczyk.rkbudget.rest.AbstractDataJpaTest
 import de.kasperczyk.rkbudget.rest.fixedTransaction.FixedTransactionRepository

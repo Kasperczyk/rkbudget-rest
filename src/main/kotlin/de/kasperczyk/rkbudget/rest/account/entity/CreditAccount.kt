@@ -11,8 +11,8 @@ import javax.persistence.Entity
 class CreditAccount(name: String = "",
                     profile: Profile = Profile(),
                     expirationDate: LocalDate = LocalDate.now(),
-                    @Column var issuer: String = "",
-                    @Column var creditCardNumber: String = ""
+                    @Column(name = "ISSUER") var issuer: String = "",
+                    @Column(name = "CREDICT_CARD_NUMBER") var creditCardNumber: String = ""
 ) : ExpirableAccount(name, profile, expirationDate, AccountType.CREDIT) {
 
     override fun equals(other: Any?): Boolean {
